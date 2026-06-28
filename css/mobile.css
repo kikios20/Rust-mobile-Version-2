@@ -156,6 +156,30 @@ input, button {
     }
 }
 
+/* =========================
+   MOBILE SAFE MODE
+========================= */
+
+@media (max-width: 768px) {
+    .background .crystal,
+    .gradient-layer,
+    .chemical-layer {
+        display: none !important;
+    }
+
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .server-card,
+    .rule-card,
+    .shop-banner {
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+    }
+}
+
 @media (min-width: 768px) {
     .crystal {
         animation: float 8s ease-in-out infinite;

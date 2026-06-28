@@ -45,6 +45,7 @@ html, body {
 
 html {
     touch-action: manipulation;
+    scroll-behavior: auto;
 }
 
 button {
