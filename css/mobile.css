@@ -1,54 +1,33 @@
 /* =========================
    MOBILE PERFORMANCE LAYER
-   This file no longer duplicates layout rules from style.css
-   (that caused dead/conflicting CSS, e.g. a hero-right size
-   rule that could never apply because style.css already hid
-   hero-right at the same breakpoint).
-
-
-   Its only job now: make the page cheaper to render on phones
-   while keeping the exact same look.
+   Removes backdrop-filter from moving elements (crystals, header)
+   on mobile — that's where the GPU cost hurts most on weak phones.
+   Static cards keep their blur (they don't move, so it's cheap).
 ========================= */
 
-
 @media (max-width: 768px) {
-    :root {
-        /* Backdrop-filter blur is one of the most GPU-expensive
-           CSS effects, especially on mid/low-end phones, and it
-           gets recalculated on every scroll frame for fixed/sticky
-           elements like the header and the floating crystals.
-           Lowering it keeps the glass effect but removes most of
-           the cost. */
-        --blur-bg: 3px;
-        --blur-header: 10px;
-        --blur-card: 8px;
-        --blur-banner: 10px;
-        --blur-menu: 12px;
-    }
-
-
-    /* The 4 decorative background crystals are the biggest single
-       cost on mobile: large blurred elements animating forever.
-       Shrinking + slowing them keeps the atmosphere without the
-       constant GPU repaint cost of the desktop version. */
+    /* Crystals: always moving, backdrop-filter kills phones here */
     .crystal {
-        filter: drop-shadow(0 0 20px rgba(0,229,255,0.15));
+        backdrop-filter: none;
+    }
+    .crystal-3 { display: none; } /* biggest one — least value on small screen */
+
+    /* Header: fixed over scrolling content, blur recalculates every frame */
+    header {
+        backdrop-filter: none;
+        background: rgba(5,7,13,0.85); /* denser background instead of blur */
     }
 
-
-    .crystal-3 { display: none; } /* biggest one (400px) — least visible value on a small screen */
-
-
-    .main-crystal {
-        animation: crystalFloat 6s ease-in-out infinite;
-        /* drop the brightness pulse on mobile: same shape, less
-           constant filter recalculation */
+    /* Mobile menu: also fixed over page, same problem */
+    .mobile-menu {
+        backdrop-filter: none;
+        background: rgba(10,12,20,0.98);
     }
+
+    /* Static cards keep blur — they're not moving so it's fine */
 }
 
-
-/* Respect users/devices that ask for reduced motion: turns off
-   every decorative animation, keeps the static design intact. */
+/* Respect reduced-motion users */
 @media (prefers-reduced-motion: reduce) {
     .crystal,
     .main-crystal,
