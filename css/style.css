@@ -26,6 +26,8 @@
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
     backdrop-filter: none !important;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 
