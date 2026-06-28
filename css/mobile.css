@@ -1,0 +1,72 @@
+/* =========================
+   MOBILE FIXES
+========================= */
+
+@media (max-width: 1024px) {
+
+    nav {
+        display: none;
+    }
+
+    .header-buttons {
+        display: none;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px;
+    }
+
+    .hero-left h2 {
+        font-size: 34px;
+    }
+
+    .hero-right {
+        width: 280px;
+        height: 280px;
+    }
+
+    .hero-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .servers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .shop-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+}
+
+/* =========================
+   FINAL POLISH
+========================= */
+
+/* smoother animations */
+* {
+    scroll-behavior: smooth;
+}
+
+/* better hover feel */
+button, .server-card, .rule-card {
+    will-change: transform;
+}
+
+/* prevent ugly mobile zoom issues */
+input, button {
+    font-size: 16px;
+}
