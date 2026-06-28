@@ -280,8 +280,8 @@ nav a:hover::after {
 
 /* HERO */
 .hero {
-    height: 100dvh; /* dvh = dynamic viewport height, accounts for mobile browser chrome */
-    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh; /* prevents jump when mobile browser's address bar hides/shows on scroll */
     display: flex;
     align-items: center;
     position: relative;
@@ -398,7 +398,7 @@ nav a:hover::after {
     background: linear-gradient(135deg, rgba(0,229,255,0.2), rgba(138,92,255,0.2));
     clip-path: polygon(50% 0%, 90% 20%, 100% 55%, 75% 100%, 25% 100%, 0% 55%, 10% 20%);
     position: relative;
-    box-shadow: 0 0 40px rgba(0,229,255,0.2);
+    box-shadow: 0 0 80px rgba(0,229,255,0.2);
     animation: crystalFloat 6s ease-in-out infinite,
                pulseGlow 2s ease-in-out infinite;
     will-change: transform, filter;
@@ -855,6 +855,7 @@ footer li {
     right: -100%;
     width: 70%;
     height: 100vh;
+    height: 100dvh;
     background: rgba(10,12,20,0.95);
     backdrop-filter: blur(var(--blur-menu));
     display: flex;
@@ -878,6 +879,8 @@ footer li {
 
 /* =========================
    LAYOUT BREAKPOINTS
+   (visual layout, not performance —
+   performance overrides live in mobile.css)
 ========================= */
 @media (max-width: 1024px) {
     nav { display: none; }
