@@ -126,7 +126,10 @@ header .container {
     align-items: center;
 }
 
-/* ===== LOGO ===== */
+/* =========================
+   HEADER - LOGO
+========================= */
+
 .logo {
     display: flex;
     align-items: center;
@@ -134,27 +137,25 @@ header .container {
 }
 
 .logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 34px;
+    height: 34px;
     position: relative;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 20% 100%, 0% 35%);
+    box-shadow: 0 0 25px rgba(0,229,255,0.4);
+    animation: logoFloat 4s ease-in-out infinite;
 }
 
 .logo-core {
-    width: 14px;
-    height: 14px;
-    background: white;
-    border-radius: 50%;
-    box-shadow: 0 0 15px var(--cyan);
+    position: absolute;
+    inset: 6px;
+    background: rgba(0,0,0,0.4);
+    clip-path: inherit;
 }
 
 .logo-text h1 {
-    font-size: 20px;
-    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 2px;
     background: linear-gradient(90deg, var(--cyan), var(--violet));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -163,36 +164,37 @@ header .container {
 .logo-text p {
     font-size: 10px;
     color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 2px;
 }
 
-/* ===== NAVIGATION ===== */
+/* =========================
+   NAVIGATION
+========================= */
+
 nav {
     display: flex;
-    gap: 30px;
+    gap: 25px;
 }
 
 nav a {
-    font-size: 14px;
-    font-weight: 500;
     color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
     transition: 0.3s;
     position: relative;
 }
 
 nav a:hover {
-    color: var(--text);
+    color: var(--cyan);
 }
 
 nav a::after {
-    content: '';
+    content: "";
     position: absolute;
-    bottom: -4px;
+    bottom: -6px;
     left: 0;
-    width: 0;
+    width: 0%;
     height: 2px;
-    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    background: var(--cyan);
     transition: 0.3s;
 }
 
@@ -200,40 +202,50 @@ nav a:hover::after {
     width: 100%;
 }
 
-/* ===== HEADER BUTTONS ===== */
+/* =========================
+   BUTTONS
+========================= */
+
 .header-buttons {
     display: flex;
-    gap: 12px;
-}
-
-.login-button,
-.register-button {
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: 0.3s;
+    gap: 10px;
 }
 
 .login-button {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
     background: transparent;
-    border: 1px solid var(--soft);
     color: var(--text);
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 .login-button:hover {
     border-color: var(--cyan);
-    color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0,229,255,0.2);
 }
 
 .register-button {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
     background: linear-gradient(135deg, var(--cyan), var(--violet));
-    color: var(--bg);
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 .register-button:hover {
-    box-shadow: 0 0 30px rgba(0,229,255,0.4);
     transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,229,255,0.4);
+}
+
+/* Logo animation */
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
 }
 
 /* ===== HERO SECTION ===== */
