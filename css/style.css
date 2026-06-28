@@ -62,18 +62,21 @@ button {
 }
 
 /* Features Section */
+.features {
+    padding: 80px 0;
+}
+
 .features .container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
+    gap: 20px;
 }
 
 .feature-card {
     padding: 25px;
-    border-radius: 18px;
+    border-radius: 16px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
     text-align: center;
     transition: 0.3s;
 }
@@ -493,19 +496,30 @@ nav a:hover::after {
 
 .server-card {
     position: relative;
+    overflow: hidden;
     padding: 25px;
     border-radius: 18px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
-    overflow: hidden;
     transition: 0.3s;
 }
 
+.server-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(0,229,255,0.08), transparent 60%);
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.server-card:hover::before {
+    opacity: 1;
+}
+
 .server-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(0,229,255,0.4);
-    box-shadow: 0 20px 60px rgba(0,229,255,0.15);
+    transform: translateY(-5px);
+    border-color: rgba(0,229,255,0.3);
 }
 
 /* =========================
@@ -714,16 +728,17 @@ nav a:hover::after {
 ========================= */
 
 footer {
-    padding: 80px 0 30px;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 80px;
+    border-top: 1px solid rgba(255,255,255,0.08);
     margin-top: 100px;
+    background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
 }
 
 .footer-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 30px;
-    margin-bottom: 40px;
+    padding-bottom: 40px;
 }
 
 .footer-logo {
