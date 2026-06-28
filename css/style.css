@@ -826,3 +826,22 @@ footer li {
         gap: 20px;
     }
 }
+
+/* =========================
+   FINAL POLISH
+========================= */
+
+/* smoother animations */
+* {
+    scroll-behavior: smooth;
+}
+
+/* better hover feel */
+button, .server-card, .rule-card {
+    will-change: transform;
+}
+
+/* prevent ugly mobile zoom issues */
+input, button {
+    font-size: 16px;
+}
