@@ -682,6 +682,112 @@ nav a:hover::after {
    RULES SECTION
 ========================= */
 
+/* =========================
+   ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ ИНТЕРФЕЙСА
+========================= */
+
+/* убираем любые препятствия */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* нормировать контейнер для всех секций */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* фиксируем особенности сетки */
+.features .container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* Дополнительные функции */
+@media (max-width: 900px) {
+    .features .container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* универсальный фикс карточек */
+.server-card,
+.rule-card,
+.feature-card,
+.shop-banner {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+/* исправить текст, чтобы он не ломался */
+p, h1, h2, h3 {
+    word-break: break-word;
+}
+
+/* кнопки без вылезания */
+button {
+    max-width: 100%;
+    font-size: 14px;
+}
+
+/* герой присутствует */
+@media (max-width: 768px) {
+    .hero {
+        height: auto;
+        padding: 120px 0 60px;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-left h2 {
+        font-size: 28px;
+    }
+
+    .hero-right {
+        width: 220px;
+        height: 220px;
+    }
+
+    .hero-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+/* серверы 1 колонка на мобилке */
+@media (max-width: 900px) {
+    .servers-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* правила 1 колонка */
+@media (max-width: 900px) {
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* футер адаптив */
+@media (max-width: 900px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
+
+/* Плавность */
+html {
+    scroll-behavior: smooth;
+}
+
 .rules-section {
     padding: 120px 0;
 }
