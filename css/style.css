@@ -3,19 +3,29 @@
    CORE THEME
 ========================= */
 
+
 :root {
     --bg: #05070d;
     --panel: rgba(12, 14, 22, 0.6);
     --glass: rgba(255,255,255,0.05);
-
     --cyan: #00e5ff;
     --violet: #8a5cff;
     --orange: #ff7a3d;
-
     --text: #ffffff;
     --muted: rgba(255,255,255,0.6);
     --soft: rgba(255,255,255,0.1);
+
+
+    /* Single source of truth for blur strength.
+       Mobile media queries below override these instead of
+       duplicating every selector that uses blur. */
+    --blur-bg: 8px;
+    --blur-header: 20px;
+    --blur-card: 15px;
+    --blur-banner: 20px;
+    --blur-menu: 20px;
 }
+
 
 * {
     margin: 0;
@@ -24,23 +34,26 @@
     font-family: "Inter", sans-serif;
 }
 
+
 body {
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
 }
 
-/* ===== CONTAINER ===== */
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
+
 a {
     text-decoration: none;
     color: inherit;
 }
+
 
 button {
     font-family: inherit;
@@ -49,21 +62,20 @@ button {
     outline: none;
 }
 
+
 ul {
     list-style: none;
 }
 
-/* ================================================
-   BACKGROUND & EFFECTS
-   ================================================ */
 
+/* BACKGROUND */
 .background {
     position: fixed;
     inset: 0;
     z-index: -10;
 }
 
-/* основной градиент */
+
 .gradient-layer {
     position: absolute;
     inset: 0;
@@ -73,25 +85,36 @@ ul {
         radial-gradient(circle at 50% 100%, rgba(255,122,61,0.05), transparent 50%);
 }
 
-/* ===== КРИСТАЛЛЫ (ГЛАВНЫЙ ВИЗУАЛ) ===== */
+
 .crystal {
     position: absolute;
     width: 300px;
     height: 500px;
     background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(var(--blur-bg));
     border: 1px solid rgba(255,255,255,0.08);
-    transform: rotate(25deg);
     opacity: 0.6;
     filter: drop-shadow(0 0 40px rgba(0,229,255,0.2));
+    animation: floatCrystal 32s ease-in-out infinite;
+    will-change: transform;
 }
 
-.crystal-1 { top: 10%; left: 5%; }
-.crystal-2 { top: 40%; right: 10%; width: 200px; }
-.crystal-3 { bottom: 10%; left: 30%; width: 400px; opacity: 0.4; }
-.crystal-4 { top: 20%; right: 30%; width: 250px; }
 
-/* ===== CHEMICAL TEXT LAYER ===== */
+.crystal-1 { top: 10%; left: 5%; animation-duration: 32s; }
+.crystal-2 { top: 40%; right: 10%; width: 200px; animation-duration: 21s; animation-delay: -4s; }
+.crystal-3 { bottom: 10%; left: 30%; width: 400px; opacity: 0.4; animation-duration: 16s; animation-delay: -9s; }
+.crystal-4 { top: 20%; right: 30%; width: 250px; animation-duration: 13s; animation-delay: -2s; }
+
+
+@keyframes floatCrystal {
+    0%   { transform: translate(0px, 0px) rotate(25deg); }
+    25%  { transform: translate(8px, -7px) rotate(25deg); }
+    50%  { transform: translate(0px, -10px) rotate(25deg); }
+    75%  { transform: translate(-8px, -7px) rotate(25deg); }
+    100% { transform: translate(0px, 0px) rotate(25deg); }
+}
+
+
 .chemical-layer {
     position: absolute;
     inset: 0;
@@ -104,21 +127,24 @@ ul {
     padding: 60px;
 }
 
+
 .chemical-layer span {
     transform: rotate(-20deg);
 }
 
-/* ===== HEADER ===== */
+
+/* HEADER */
 header {
     position: fixed;
     top: 0;
     width: 100%;
     padding: 20px 0;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(var(--blur-header));
     background: rgba(5,7,13,0.6);
     border-bottom: 1px solid rgba(255,255,255,0.05);
     z-index: 100;
 }
+
 
 header .container {
     display: flex;
@@ -126,15 +152,13 @@ header .container {
     align-items: center;
 }
 
-/* =========================
-   HEADER - LOGO
-========================= */
 
 .logo {
     display: flex;
     align-items: center;
     gap: 12px;
 }
+
 
 .logo-icon {
     width: 34px;
@@ -146,12 +170,14 @@ header .container {
     animation: logoFloat 4s ease-in-out infinite;
 }
 
+
 .logo-core {
     position: absolute;
     inset: 6px;
     background: rgba(0,0,0,0.4);
     clip-path: inherit;
 }
+
 
 .logo-text h1 {
     font-size: 16px;
@@ -161,19 +187,18 @@ header .container {
     -webkit-text-fill-color: transparent;
 }
 
+
 .logo-text p {
     font-size: 10px;
     color: var(--muted);
 }
 
-/* =========================
-   NAVIGATION
-========================= */
 
 nav {
     display: flex;
     gap: 25px;
 }
+
 
 nav a {
     color: var(--muted);
@@ -183,9 +208,11 @@ nav a {
     position: relative;
 }
 
+
 nav a:hover {
     color: var(--cyan);
 }
+
 
 nav a::after {
     content: "";
@@ -198,18 +225,17 @@ nav a::after {
     transition: 0.3s;
 }
 
+
 nav a:hover::after {
     width: 100%;
 }
 
-/* =========================
-   BUTTONS
-========================= */
 
 .header-buttons {
     display: flex;
     gap: 10px;
 }
+
 
 .login-button {
     padding: 10px 16px;
@@ -221,10 +247,12 @@ nav a:hover::after {
     transition: 0.3s;
 }
 
+
 .login-button:hover {
     border-color: var(--cyan);
     box-shadow: 0 0 20px rgba(0,229,255,0.2);
 }
+
 
 .register-button {
     padding: 10px 16px;
@@ -237,28 +265,29 @@ nav a:hover::after {
     transition: 0.3s;
 }
 
+
 .register-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 30px rgba(0,229,255,0.4);
 }
 
-/* Logo animation */
+
 @keyframes logoFloat {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-8px); }
 }
 
-/* =========================
-   HERO SECTION
-========================= */
 
+/* HERO */
 .hero {
     height: 100vh;
+    height: 100dvh; /* prevents jump when mobile browser's address bar hides/shows on scroll */
     display: flex;
     align-items: center;
     position: relative;
     padding-top: 80px;
 }
+
 
 .hero-container {
     display: flex;
@@ -267,7 +296,7 @@ nav a:hover::after {
     gap: 60px;
 }
 
-/* HERO LEFT TEXT */
+
 .hero-label {
     font-size: 12px;
     letter-spacing: 3px;
@@ -275,6 +304,7 @@ nav a:hover::after {
     margin-bottom: 15px;
     opacity: 0.8;
 }
+
 
 .hero-left h2 {
     font-size: 54px;
@@ -285,6 +315,7 @@ nav a:hover::after {
     -webkit-text-fill-color: transparent;
 }
 
+
 .hero-left p {
     color: var(--muted);
     font-size: 14px;
@@ -292,12 +323,13 @@ nav a:hover::after {
     max-width: 420px;
 }
 
-/* HERO BUTTONS */
+
 .hero-buttons {
     display: flex;
     gap: 15px;
     margin-top: 25px;
 }
+
 
 .primary-button {
     padding: 12px 20px;
@@ -310,10 +342,12 @@ nav a:hover::after {
     transition: 0.3s;
 }
 
+
 .primary-button:hover {
     transform: translateY(-3px);
     box-shadow: 0 0 40px rgba(0,229,255,0.35);
 }
+
 
 .secondary-button {
     padding: 12px 20px;
@@ -325,31 +359,31 @@ nav a:hover::after {
     transition: 0.3s;
 }
 
+
 .secondary-button:hover {
     border-color: var(--cyan);
     box-shadow: 0 0 20px rgba(0,229,255,0.15);
 }
 
-/* STATS BLOCK */
+
 .hero-stats {
     display: flex;
     gap: 25px;
     margin-top: 40px;
 }
 
+
 .stat h3 {
     font-size: 22px;
     color: var(--cyan);
 }
+
 
 .stat span {
     font-size: 11px;
     color: var(--muted);
 }
 
-/* =========================
-   HERO RIGHT CRYSTAL
-========================= */
 
 .hero-right {
     position: relative;
@@ -357,16 +391,19 @@ nav a:hover::after {
     height: 450px;
 }
 
+
 .main-crystal {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, rgba(0,229,255,0.2), rgba(138,92,255,0.2));
     clip-path: polygon(50% 0%, 90% 20%, 100% 55%, 75% 100%, 25% 100%, 0% 55%, 10% 20%);
-    filter: blur(0.2px);
     position: relative;
     box-shadow: 0 0 80px rgba(0,229,255,0.2);
-    animation: crystalFloat 6s ease-in-out infinite;
+    animation: crystalFloat 6s ease-in-out infinite,
+               pulseGlow 2s ease-in-out infinite;
+    will-change: transform, filter;
 }
+
 
 .crystal-glow {
     position: absolute;
@@ -374,6 +411,7 @@ nav a:hover::after {
     background: radial-gradient(circle, rgba(0,229,255,0.2), transparent 60%);
     filter: blur(20px);
 }
+
 
 .energy-ring {
     position: absolute;
@@ -383,40 +421,50 @@ nav a:hover::after {
     animation: rotate 10s linear infinite;
 }
 
+
 .ring2 {
     transform: scale(1.2);
     animation-duration: 14s;
 }
+
 
 .ring3 {
     transform: scale(1.4);
     animation-duration: 18s;
 }
 
-/* Animations */
+
 @keyframes crystalFloat {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-15px) rotate(2deg); }
 }
+
+
+@keyframes pulseGlow {
+    0%, 100% { filter: brightness(1); }
+    15% { filter: brightness(1.2); }
+    30% { filter: brightness(1); }
+}
+
 
 @keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
-/* =========================
-   SERVERS SECTION
-========================= */
 
+/* SERVERS */
 .servers-section {
     padding: 120px 0;
     position: relative;
 }
 
+
 .section-header {
     text-align: center;
     margin-bottom: 60px;
 }
+
 
 .section-tag {
     font-size: 12px;
@@ -425,35 +473,38 @@ nav a:hover::after {
     opacity: 0.8;
 }
 
+
 .section-header h2 {
     font-size: 38px;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
+
 .section-header p {
     color: var(--muted);
     font-size: 14px;
 }
 
-/* GRID */
+
 .servers-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
 }
 
-/* SERVER CARD */
+
 .server-card {
     position: relative;
     padding: 25px;
     border-radius: 18px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(var(--blur-card));
     overflow: hidden;
     transition: 0.3s;
 }
+
 
 .server-card:hover {
     transform: translateY(-8px);
@@ -461,7 +512,7 @@ nav a:hover::after {
     box-shadow: 0 20px 60px rgba(0,229,255,0.15);
 }
 
-/* CARD BACKGROUND CRYSTALS */
+
 .server-background {
     position: absolute;
     inset: 0;
@@ -470,25 +521,29 @@ nav a:hover::after {
     transform: scale(1.2);
 }
 
+
 .crystal-blue {
     background: radial-gradient(circle, rgba(0,229,255,0.4), transparent 70%);
 }
+
 
 .crystal-purple {
     background: radial-gradient(circle, rgba(138,92,255,0.4), transparent 70%);
 }
 
+
 .crystal-orange {
     background: radial-gradient(circle, rgba(255,122,61,0.4), transparent 70%);
 }
 
-/* CARD TOP */
+
 .server-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
 }
+
 
 .status {
     font-size: 11px;
@@ -499,25 +554,26 @@ nav a:hover::after {
     border: 1px solid rgba(0,255,100,0.3);
 }
 
+
 .players {
     font-size: 12px;
     color: var(--muted);
 }
 
-/* CARD TITLE */
+
 .server-card h3 {
     font-size: 20px;
     margin-bottom: 10px;
 }
 
-/* CARD DESCRIPTION */
+
 .server-card p {
     font-size: 13px;
     color: var(--muted);
     line-height: 1.5;
 }
 
-/* BUTTON */
+
 .card-button {
     margin-top: 15px;
     width: 100%;
@@ -531,21 +587,25 @@ nav a:hover::after {
     transition: 0.3s;
 }
 
+
 .card-button:hover {
     transform: scale(1.03);
     box-shadow: 0 0 30px rgba(0,229,255,0.25);
 }
 
-/* ===== FEATURES SECTION ===== */
+
+/* FEATURES */
 .features {
     padding: 80px 0;
 }
+
 
 .features .container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
 }
+
 
 .feature-card {
     background: var(--panel);
@@ -556,10 +616,12 @@ nav a:hover::after {
     transition: 0.3s;
 }
 
+
 .feature-card:hover {
     border-color: var(--violet);
     transform: translateY(-5px);
 }
+
 
 .feature-icon {
     width: 60px;
@@ -572,13 +634,6 @@ nav a:hover::after {
     justify-content: center;
 }
 
-.feature-icon::after {
-    content: '';
-    width: 24px;
-    height: 24px;
-    background: white;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E") center/contain no-repeat;
-}
 
 .feature-card h3 {
     font-size: 18px;
@@ -586,18 +641,18 @@ nav a:hover::after {
     margin-bottom: 8px;
 }
 
+
 .feature-card p {
     font-size: 14px;
     color: var(--muted);
 }
 
-/* =========================
-   SHOP SECTION
-========================= */
 
+/* SHOP */
 .shop-section {
     padding: 120px 0;
 }
+
 
 .shop-banner {
     display: flex;
@@ -610,10 +665,11 @@ nav a:hover::after {
         rgba(138,92,255,0.08)
     );
     border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(var(--blur-banner));
     position: relative;
     overflow: hidden;
 }
+
 
 .shop-label {
     font-size: 12px;
@@ -622,16 +678,19 @@ nav a:hover::after {
     opacity: 0.8;
 }
 
+
 .shop-left h2 {
     font-size: 34px;
     margin: 10px 0;
 }
+
 
 .shop-left p {
     color: var(--muted);
     font-size: 14px;
     max-width: 400px;
 }
+
 
 .shop-button {
     padding: 14px 22px;
@@ -644,18 +703,18 @@ nav a:hover::after {
     transition: 0.3s;
 }
 
+
 .shop-button:hover {
     transform: translateY(-4px);
     box-shadow: 0 0 40px rgba(255,122,61,0.25);
 }
 
-/* =========================
-   RULES SECTION
-========================= */
 
+/* RULES */
 .rules-section {
     padding: 120px 0;
 }
+
 
 .rules-grid {
     display: grid;
@@ -663,19 +722,22 @@ nav a:hover::after {
     gap: 25px;
 }
 
+
 .rule-card {
     padding: 25px;
     border-radius: 18px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(var(--blur-card));
     transition: 0.3s;
 }
+
 
 .rule-card:hover {
     transform: translateY(-6px);
     border-color: rgba(0,229,255,0.3);
 }
+
 
 .rule-number {
     font-size: 12px;
@@ -684,9 +746,11 @@ nav a:hover::after {
     margin-bottom: 10px;
 }
 
+
 .rule-card h3 {
     margin-bottom: 10px;
 }
+
 
 .rule-card p {
     color: var(--muted);
@@ -694,15 +758,14 @@ nav a:hover::after {
     line-height: 1.5;
 }
 
-/* =========================
-   FOOTER
-========================= */
 
+/* FOOTER */
 footer {
     padding: 80px 0 30px;
     border-top: 1px solid rgba(255,255,255,0.05);
     margin-top: 100px;
 }
+
 
 .footer-grid {
     display: grid;
@@ -710,6 +773,7 @@ footer {
     gap: 30px;
     margin-bottom: 40px;
 }
+
 
 .footer-logo {
     font-size: 18px;
@@ -720,6 +784,7 @@ footer {
     margin-bottom: 10px;
 }
 
+
 footer p,
 footer li {
     color: var(--muted);
@@ -727,23 +792,28 @@ footer li {
     line-height: 1.6;
 }
 
+
 footer h4 {
     margin-bottom: 10px;
 }
+
 
 footer ul {
     list-style: none;
 }
 
+
 footer li {
     margin-bottom: 6px;
 }
+
 
 .footer-status {
     display: flex;
     align-items: center;
     gap: 8px;
 }
+
 
 .status-dot {
     width: 8px;
@@ -753,6 +823,7 @@ footer li {
     box-shadow: 0 0 10px #00ff88;
 }
 
+
 .footer-bottom {
     text-align: center;
     color: var(--muted);
@@ -760,102 +831,15 @@ footer li {
     margin-top: 20px;
 }
 
-/* ===== MOBILE STYLES ===== */
-@media (max-width: 1024px) {
-    nav { display: none; }
-    
-    .hero-container {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-    
-    .hero-right { display: none; }
-    
-    .hero-buttons {
-        justify-content: center;
-    }
-    
-    .hero-stats {
-        justify-content: center;
-    }
-    
-    .servers-grid,
-    .features .container,
-    .rules-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .footer-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
 
-@media (max-width: 768px) {
-    .hero-left h2 {
-        font-size: 32px;
-    }
-    
-    .section-header h2 {
-        font-size: 28px;
-    }
-    
-    .servers-grid,
-    .features .container,
-    .rules-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .shop-banner {
-        flex-direction: column;
-        text-align: center;
-        gap: 30px;
-        padding: 40px 24px;
-    }
-    
-    .footer-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-    
-    .header-buttons {
-        display: none;
-    }
-    
-    .hero-stats {
-        flex-direction: column;
-        gap: 20px;
-    }
-}
-
-/* =========================
-   FINAL POLISH
-========================= */
-
-/* smoother animations */
-* {
-    scroll-behavior: smooth;
-}
-
-/* better hover feel */
-button, .server-card, .rule-card {
-    will-change: transform;
-}
-
-/* prevent ugly mobile zoom issues */
-input, button {
-    font-size: 16px;
-}
-
-/* =========================
-   BURGER MENU
-========================= */
-
+/* BURGER */
 .burger {
     display: none;
     flex-direction: column;
     gap: 5px;
     cursor: pointer;
 }
+
 
 .burger span {
     width: 24px;
@@ -864,14 +848,16 @@ input, button {
     transition: 0.3s;
 }
 
+
 .mobile-menu {
     position: fixed;
     top: 0;
     right: -100%;
     width: 70%;
     height: 100vh;
+    height: 100dvh;
     background: rgba(10,12,20,0.95);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(var(--blur-menu));
     display: flex;
     flex-direction: column;
     padding: 80px 30px;
@@ -880,18 +866,63 @@ input, button {
     z-index: 999;
 }
 
+
 .mobile-menu a {
     color: white;
     text-decoration: none;
     font-size: 18px;
 }
 
-.mobile-menu.active {
-    right: 0;
+
+.mobile-menu.active { right: 0; }
+
+
+/* =========================
+   LAYOUT BREAKPOINTS
+   (visual layout, not performance —
+   performance overrides live in mobile.css)
+========================= */
+@media (max-width: 1024px) {
+    nav { display: none; }
+    .burger { display: flex; }
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero-right {
+        width: 280px;
+        height: 280px;
+        margin: 0 auto;
+    }
+    .hero-buttons { justify-content: center; }
+    .hero-stats { justify-content: center; }
+    .servers-grid,
+    .features .container,
+    .rules-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .footer-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 1024px) {
-    .burger {
-        display: flex;
+
+@media (max-width: 768px) {
+    .hero-left h2 { font-size: 32px; }
+    .section-header h2 { font-size: 28px; }
+    .servers-grid,
+    .features .container,
+    .rules-grid { grid-template-columns: 1fr; }
+    .shop-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+        padding: 40px 24px;
     }
+    .footer-grid { grid-template-columns: 1fr; text-align: center; }
+    .header-buttons { display: none; }
+    .hero-stats { flex-direction: column; gap: 20px; }
 }
+
+
+/* FINAL POLISH */
+html { scroll-behavior: smooth; }
+input, button { font-size: 16px; }
