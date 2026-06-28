@@ -654,6 +654,7 @@ nav a:hover::after {
 .shop-banner {
     box-sizing: border-box;
     word-break: break-word;
+    box-shadow: none !important;
 }
 
 /* =========================
