@@ -1,52 +1,59 @@
 /* =========================
-   MOBILE FIXES
+   MOBILE PERFORMANCE LAYER
+   This file no longer duplicates layout rules from style.css
+   (that caused dead/conflicting CSS, e.g. a hero-right size
+   rule that could never apply because style.css already hid
+   hero-right at the same breakpoint).
+
+
+   Its only job now: make the page cheaper to render on phones
+   while keeping the exact same look.
 ========================= */
 
-@media (max-width: 1024px) {
-    nav {
-        display: none;
+
+@media (max-width: 768px) {
+    :root {
+        /* Backdrop-filter blur is one of the most GPU-expensive
+           CSS effects, especially on mid/low-end phones, and it
+           gets recalculated on every scroll frame for fixed/sticky
+           elements like the header and the floating crystals.
+           Lowering it keeps the glass effect but removes most of
+           the cost. */
+        --blur-bg: 3px;
+        --blur-header: 10px;
+        --blur-card: 8px;
+        --blur-banner: 10px;
+        --blur-menu: 12px;
     }
 
-    .header-buttons {
-        display: none;
+
+    /* The 4 decorative background crystals are the biggest single
+       cost on mobile: large blurred elements animating forever.
+       Shrinking + slowing them keeps the atmosphere without the
+       constant GPU repaint cost of the desktop version. */
+    .crystal {
+        filter: drop-shadow(0 0 20px rgba(0,229,255,0.15));
     }
 
-    .hero-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 40px;
-    }
 
-    .hero-left h2 {
-        font-size: 34px;
-    }
+    .crystal-3 { display: none; } /* biggest one (400px) — least visible value on a small screen */
 
-    .hero-right {
-        width: 280px;
-        height: 280px;
-    }
 
-    .hero-stats {
-        justify-content: center;
-        flex-wrap: wrap;
+    .main-crystal {
+        animation: crystalFloat 6s ease-in-out infinite;
+        /* drop the brightness pulse on mobile: same shape, less
+           constant filter recalculation */
     }
+}
 
-    .servers-grid {
-        grid-template-columns: 1fr;
-    }
 
-    .rules-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-
-    .shop-banner {
-        flex-direction: column;
-        text-align: center;
-        gap: 20px;
+/* Respect users/devices that ask for reduced motion: turns off
+   every decorative animation, keeps the static design intact. */
+@media (prefers-reduced-motion: reduce) {
+    .crystal,
+    .main-crystal,
+    .energy-ring,
+    .logo-icon {
+        animation: none !important;
     }
 }
