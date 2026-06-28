@@ -591,185 +591,173 @@ nav a:hover::after {
     color: var(--muted);
 }
 
-/* ===== SHOP SECTION ===== */
+/* =========================
+   SHOP SECTION
+========================= */
+
 .shop-section {
-    padding: 100px 0;
+    padding: 120px 0;
 }
 
 .shop-banner {
-    background: linear-gradient(135deg, rgba(138,92,255,0.1), rgba(0,229,255,0.1));
-    border: 1px solid var(--soft);
-    border-radius: 16px;
-    padding: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.shop-left {
-    max-width: 500px;
+    padding: 40px;
+    border-radius: 20px;
+    background: linear-gradient(135deg,
+        rgba(0,229,255,0.08),
+        rgba(138,92,255,0.08)
+    );
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
 }
 
 .shop-label {
-    display: inline-block;
-    padding: 6px 14px;
-    background: rgba(138,92,255,0.2);
-    border-radius: 50px;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--violet);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    opacity: 0.8;
 }
 
 .shop-left h2 {
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 12px;
+    font-size: 34px;
+    margin: 10px 0;
 }
 
 .shop-left p {
-    font-size: 16px;
     color: var(--muted);
+    font-size: 14px;
+    max-width: 400px;
 }
 
 .shop-button {
-    padding: 16px 32px;
-    background: linear-gradient(135deg, var(--violet), var(--orange));
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-    border-radius: 10px;
+    padding: 14px 22px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--orange), var(--violet));
+    color: black;
+    font-weight: 800;
+    cursor: pointer;
     transition: 0.3s;
 }
 
 .shop-button:hover {
-    box-shadow: 0 0 40px rgba(138,92,255,0.4);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: 0 0 40px rgba(255,122,61,0.25);
 }
 
-/* ===== RULES SECTION ===== */
+/* =========================
+   RULES SECTION
+========================= */
+
 .rules-section {
-    padding: 100px 0;
+    padding: 120px 0;
 }
 
 .rules-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    gap: 25px;
 }
 
 .rule-card {
-    background: var(--panel);
-    border: 1px solid var(--soft);
-    border-radius: 16px;
-    padding: 32px;
+    padding: 25px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
     transition: 0.3s;
 }
 
 .rule-card:hover {
-    border-color: var(--orange);
-    transform: translateY(-5px);
+    transform: translateY(-6px);
+    border-color: rgba(0,229,255,0.3);
 }
 
 .rule-number {
-    font-size: 48px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--orange), var(--cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
 }
 
 .rule-card h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .rule-card p {
-    font-size: 14px;
     color: var(--muted);
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
-/* ===== FOOTER ===== */
+/* =========================
+   FOOTER
+========================= */
+
 footer {
-    padding: 80px 0 40px;
-    border-top: 1px solid var(--soft);
-    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3));
+    padding: 80px 0 30px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 100px;
 }
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 60px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-bottom: 40px;
 }
 
 .footer-logo {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 800;
-    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
-.footer-grid > div:first-child p {
-    font-size: 14px;
+footer p,
+footer li {
     color: var(--muted);
-    max-width: 250px;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
-.footer-grid h4 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: var(--text);
+footer h4 {
+    margin-bottom: 10px;
 }
 
-.footer-grid ul li {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: 0.3s;
+footer ul {
+    list-style: none;
 }
 
-.footer-grid ul li:hover {
-    color: var(--cyan);
+footer li {
+    margin-bottom: 6px;
 }
 
 .footer-status {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
-    color: var(--muted);
 }
 
 .status-dot {
     width: 8px;
     height: 8px;
-    background: #00ff88;
     border-radius: 50%;
+    background: #00ff88;
     box-shadow: 0 0 10px #00ff88;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
 }
 
 .footer-bottom {
     text-align: center;
-    padding-top: 40px;
-    border-top: 1px solid var(--soft);
-    font-size: 12px;
     color: var(--muted);
+    font-size: 12px;
+    margin-top: 20px;
 }
 
 /* ===== MOBILE STYLES ===== */
