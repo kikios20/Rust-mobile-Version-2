@@ -1,33 +1,68 @@
 /* =========================
    MOBILE PERFORMANCE LAYER
-   Removes backdrop-filter from moving elements (crystals, header)
-   on mobile — that's where the GPU cost hurts most on weak phones.
-   Static cards keep their blur (they don't move, so it's cheap).
+   This file no longer duplicates layout rules from style.css
+   (that caused dead/conflicting CSS, e.g. a hero-right size
+   rule that could never apply because style.css already hid
+   hero-right at the same breakpoint).
+
+
+   Its only job now: make the page cheaper to render on phones
+   while keeping the exact same look.
 ========================= */
 
-@media (max-width: 768px) {
-    /* Crystals: always moving, backdrop-filter kills phones here */
-    .crystal {
-        backdrop-filter: none;
-    }
-    .crystal-3 { display: none; } /* biggest one — least value on small screen */
 
-    /* Header: fixed over scrolling content, blur recalculates every frame */
+@media (max-width: 768px) {
+    :root {
+        /* backdrop-filter is only cheap on STATIC elements.
+           On anything that moves (the crystals) or sits fixed
+           over a scrolling page (the header), the browser has to
+           resample what's behind it every single frame — that's
+           the actual lag source, not just "blur is heavy".
+           Cards/banner/menu don't move, so a light blur there is
+           still fine to keep. */
+        --blur-card: 8px;
+        --blur-banner: 10px;
+        --blur-menu: 10px;
+    }
+
+
+    /* Header is position: fixed and the page scrolls behind it
+       constantly — backdrop-filter here means a full-width blur
+       recompute on every scroll frame. Swap it for a plain solid
+       translucent color: looks like a dark header instead of
+       frosted glass, but reads almost the same at a glance. */
     header {
         backdrop-filter: none;
-        background: rgba(5,7,13,0.85); /* denser background instead of blur */
+        background: rgba(5, 7, 13, 0.92);
     }
 
-    /* Mobile menu: also fixed over page, same problem */
-    .mobile-menu {
+
+    /* The 4 floating crystals animate forever AND used backdrop-
+       filter, meaning the browser re-blurred the moving background
+       under each of them on every frame. Dropping the blur but
+       keeping the gradient fill, border, and glow keeps the same
+       silhouette/color with a fraction of the cost. */
+    .crystal {
         backdrop-filter: none;
-        background: rgba(10,12,20,0.98);
+        background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+        filter: drop-shadow(0 0 18px rgba(0,229,255,0.15));
     }
 
-    /* Static cards keep blur — they're not moving so it's fine */
+
+    .crystal-3 { display: none; } /* biggest one (400px) — least visible value on a small screen */
+
+
+    .main-crystal {
+        animation: crystalFloat 6s ease-in-out infinite;
+        /* drop the brightness pulse on mobile: same shape, less
+           constant filter recalculation */
+        box-shadow: 0 0 40px rgba(0,229,255,0.2); /* was 80px */
+    }
 }
 
-/* Respect reduced-motion users */
+
+/* Respect users/devices that ask for reduced motion: turns off
+   every decorative animation, keeps the static design intact. */
 @media (prefers-reduced-motion: reduce) {
     .crystal,
     .main-crystal,
