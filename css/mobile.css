@@ -122,3 +122,26 @@ input, button {
         display: flex;
     }
 }
+
+/* =========================
+   PERFORMANCE MODE
+========================= */
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* отключаем тяжёлые blur на мобилках */
+@media (max-width: 768px) {
+    .crystal,
+    .main-crystal,
+    .shop-banner,
+    .server-card,
+    .rule-card {
+        backdrop-filter: none !important;
+    }
+
+    .gradient-layer {
+        opacity: 0.7;
+    }
+}
