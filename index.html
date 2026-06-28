@@ -75,7 +75,7 @@
 <div class="header-buttons">
 
 
-<button class="login-button">
+<button class="login-button" id="openLogin">
 
 
 Вход
@@ -84,7 +84,7 @@
 </button>
 
 
-<button class="register-button">
+<button class="register-button" id="openRegister">
 
 
 Регистрация
@@ -503,6 +503,35 @@
         </div>
     </div>
 </footer>
+
+<!-- Modals -->
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <button class="modal-close" id="closeLogin">×</button>
+        <h2>Вход</h2>
+        <form>
+            <input type="text" placeholder="Логин" required>
+            <input type="password" placeholder="Пароль" required>
+            <button type="submit" class="primary-button">Войти</button>
+        </form>
+        <p>Нет аккаунта? <a href="#" id="switchToRegister">Зарегистрироваться</a></p>
+    </div>
+</div>
+
+<div class="modal" id="registerModal">
+    <div class="modal-content">
+        <button class="modal-close" id="closeRegister">×</button>
+        <h2>Регистрация</h2>
+        <form>
+            <input type="text" placeholder="Логин" required>
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Пароль" required>
+            <button type="submit" class="primary-button">Зарегистрироваться</button>
+        </form>
+        <p>Уже есть аккаунт? <a href="#" id="switchToLogin">Войти</a></p>
+    </div>
+</div>
+
 
 <script src="js/main.js"></script>
 <script src="js/animations.js"></script>

@@ -804,6 +804,225 @@ html {
     scroll-behavior: smooth;
 }
 
+/* =========================
+   ЕДИНАЯ СИСТЕМА ПРОЕКТИРОВАНИЯ
+========================= */
+
+:root {
+    --bg: #05070d;
+    --text: #ffffff;
+    --muted: rgba(255,255,255,0.65);
+    --cyan: #00e5ff;
+    --violet: #8a5cff;
+    --orange: #ff7a3d;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.10);
+}
+
+/* =========================
+   ГЛОБАЛЬНАЯ ПЕРЕЗАГРУЗКА
+========================= */
+
+body {
+    font-family: Inter, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
+
+/* =========================
+   РАЗДЕЛЫ ЕДИНОГО РАССТОЯНИЯ
+========================= */
+
+section {
+    padding: 100px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* =========================
+   ЕДИНЫЕ ЗАГОЛОВКИ
+========================= */
+
+.section-header h2,
+.hero-left h2 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.section-tag {
+    color: var(--cyan);
+    letter-spacing: 3px;
+    font-size: 12px;
+}
+
+/* =========================
+   ЕДИНЫЕ КАРТЫ
+========================= */
+
+.server-card,
+.rule-card,
+.feature-card {
+    background: var(--card);
+    border: solid 1px var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    transition: ease 0.25s;
+}
+
+.server-card:hover,
+.rule-card:hover,
+.feature-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(0,229,255,0.25);
+}
+
+/* =========================
+   УНИФИЦИРОВАННЫЕ КНОПКИ
+========================= */
+
+button {
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: ease 0.25s;
+}
+
+.primary-button,
+.card-button {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: #000;
+    font-weight: 700;
+}
+
+.primary-button:hover,
+.card-button:hover {
+    transform: translateY(-3px);
+}
+
+/* =========================
+   ЕДИНЫЙ ТЕКСТ
+========================= */
+
+p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* =========================
+   УНИВЕРСАЛЬНОЕ РЕШЕНИЕ ДЛЯ СЕТИ
+========================= */
+
+.servers-grid,
+.rules-grid,
+.features .container {
+    display: grid;
+    gap: 20px;
+}
+
+/* =========================
+   ЕДИНОЕ МОБИЛЬНОЕ УПРАВЛЕНИЕ
+========================= */
+
+@media (max-width: 900px) {
+    section {
+        padding: 70px 0;
+    }
+
+    .servers-grid,
+    .rules-grid,
+    .features .container {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* =========================
+   MODALS
+========================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: rgba(10,12,20,0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    text-align: center;
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: var(--text);
+}
+
+.modal-content h2 {
+    margin-bottom: 25px;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content input {
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    font-size: 14px;
+}
+
+.modal-content input:focus {
+    outline: none;
+    border-color: var(--cyan);
+}
+
+.modal-content p {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.modal-content a {
+    color: var(--cyan);
+    text-decoration: none;
+}
+
 .rules-section {
     padding: 120px 0;
 }
