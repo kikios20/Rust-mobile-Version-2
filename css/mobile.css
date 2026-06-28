@@ -1,68 +1,61 @@
 /* =========================
    MOBILE PERFORMANCE LAYER
-   This file no longer duplicates layout rules from style.css
-   (that caused dead/conflicting CSS, e.g. a hero-right size
-   rule that could never apply because style.css already hid
-   hero-right at the same breakpoint).
-
-
-   Its only job now: make the page cheaper to render on phones
-   while keeping the exact same look.
 ========================= */
-
 
 @media (max-width: 768px) {
     :root {
-        /* backdrop-filter is only cheap on STATIC elements.
-           On anything that moves (the crystals) or sits fixed
-           over a scrolling page (the header), the browser has to
-           resample what's behind it every single frame — that's
-           the actual lag source, not just "blur is heavy".
-           Cards/banner/menu don't move, so a light blur there is
-           still fine to keep. */
         --blur-card: 8px;
         --blur-banner: 10px;
         --blur-menu: 10px;
     }
 
-
-    /* Header is position: fixed and the page scrolls behind it
-       constantly — backdrop-filter here means a full-width blur
-       recompute on every scroll frame. Swap it for a plain solid
-       translucent color: looks like a dark header instead of
-       frosted glass, but reads almost the same at a glance. */
     header {
         backdrop-filter: none;
         background: rgba(5, 7, 13, 0.92);
     }
 
-
-    /* The 4 floating crystals animate forever AND used backdrop-
-       filter, meaning the browser re-blurred the moving background
-       under each of them on every frame. Dropping the blur but
-       keeping the gradient fill, border, and glow keeps the same
-       silhouette/color with a fraction of the cost. */
     .crystal {
         backdrop-filter: none;
         background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
         filter: drop-shadow(0 0 18px rgba(0,229,255,0.15));
     }
 
-
-    .crystal-3 { display: none; } /* biggest one (400px) — least visible value on a small screen */
-
+    .crystal-3 { display: none; }
 
     .main-crystal {
         animation: crystalFloat 6s ease-in-out infinite;
-        /* drop the brightness pulse on mobile: same shape, less
-           constant filter recalculation */
-        box-shadow: 0 0 40px rgba(0,229,255,0.2); /* was 80px */
+        box-shadow: 0 0 40px rgba(0,229,255,0.2);
+    }
+
+    .servers-section,
+    .shop-section,
+    .rules-section {
+        padding: 60px 0;
+    }
+
+    .features {
+        padding: 50px 0;
+    }
+
+    .section-header {
+        margin-bottom: 36px;
+    }
+
+    footer {
+        margin-top: 50px;
+        padding: 50px 0 24px;
+    }
+
+    .footer-grid {
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .hero-stats {
+        margin-top: 28px;
     }
 }
 
-
-/* Respect users/devices that ask for reduced motion: turns off
-   every decorative animation, keeps the static design intact. */
 @media (prefers-reduced-motion: reduce) {
     .crystal,
     .main-crystal,
