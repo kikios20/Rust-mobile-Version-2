@@ -1,0 +1,148 @@
+/* ================================================
+   RUSTCHEM - Mobile Styles
+   ================================================ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    nav { display: none; }
+    
+    .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .hero-right { display: none; }
+    
+    .hero-buttons,
+    .hero-stats {
+        justify-content: center;
+    }
+    
+    .servers-grid,
+    .features .container,
+    .rules-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .hero {
+        min-height: auto;
+        padding: 100px 0 60px;
+    }
+    
+    .hero-left h2 {
+        font-size: 28px;
+    }
+    
+    .hero-label {
+        font-size: 9px;
+    }
+    
+    .section-header h2 {
+        font-size: 24px;
+    }
+    
+    .section-header p {
+        font-size: 14px;
+    }
+    
+    /* Grids */
+    .servers-grid,
+    .features .container,
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Shop */
+    .shop-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 24px;
+        padding: 32px 20px;
+    }
+    
+    .shop-left h2 {
+        font-size: 24px;
+    }
+    
+    /* Footer */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 30px;
+    }
+    
+    /* Header */
+    .header-buttons {
+        display: none;
+    }
+    
+    /* Stats */
+    .hero-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .stat h3 {
+        font-size: 24px;
+    }
+    
+    /* Server cards */
+    .server-card {
+        padding: 20px;
+    }
+    
+    /* Feature cards */
+    .feature-card {
+        padding: 24px;
+    }
+    
+    /* Rule cards */
+    .rule-card {
+        padding: 24px;
+    }
+    
+    .rule-number {
+        font-size: 36px;
+    }
+    
+    /* Disable animations for performance */
+    .crystal,
+    .chemical-layer span,
+    .main-crystal,
+    .energy-ring {
+        animation: none !important;
+    }
+    
+    /* Reduce blur effects */
+    .crystal-glow {
+        filter: blur(10px);
+    }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+    .hero-left h2 {
+        font-size: 24px;
+    }
+    
+    .primary-button,
+    .secondary-button {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .shop-button {
+        width: 100%;
+    }
+}
