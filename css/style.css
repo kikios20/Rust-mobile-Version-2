@@ -640,6 +640,13 @@ nav a:hover::after {
     box-shadow: 0 0 40px rgba(255,122,61,0.25);
 }
 
+.server-card,
+.rule-card,
+.shop-banner {
+    box-sizing: border-box;
+    word-break: break-word;
+}
+
 /* =========================
    RULES SECTION
 ========================= */
