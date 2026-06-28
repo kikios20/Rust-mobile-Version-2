@@ -1,54 +1,40 @@
-/* ================================================
-   RUSTCHEM - Chemical Rust Project
-   Design System & Styles
-   ================================================ */
+/* =========================
+   RUSTCHEM - STYLE.CSS
+   CORE THEME
+========================= */
 
-/* ===== CSS VARIABLES ===== */
 :root {
-    --bg-dark: #05070d;
-    --bg-dark-2: #070a12;
-    --bg-card: rgba(255,255,255,0.03);
-    --bg-card-hover: rgba(255,255,255,0.06);
-    
+    --bg: #05070d;
+    --panel: rgba(12, 14, 22, 0.6);
+    --glass: rgba(255,255,255,0.05);
+
+    --cyan: #00e5ff;
+    --violet: #8a5cff;
+    --orange: #ff7a3d;
+
     --text: #ffffff;
-    --text-secondary: rgba(255,255,255,0.6);
-    --text-muted: rgba(255,255,255,0.4);
-    
-    --accent-cyan: #00e5ff;
-    --accent-purple: #8a5cff;
-    --accent-orange: #ff7a3d;
-    
-    --glow-cyan: rgba(0,229,255,0.3);
-    --glow-purple: rgba(138,92,255,0.3);
-    --glow-orange: rgba(255,122,61,0.3);
-    
-    --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,255,255,0.15);
-    
-    --radius: 14px;
-    --radius-lg: 20px;
-    
-    --shadow: 0 8px 32px rgba(0,0,0,0.4);
-    --shadow-glow: 0 0 60px var(--glow-purple);
+    --muted: rgba(255,255,255,0.6);
+    --soft: rgba(255,255,255,0.1);
 }
 
-/* ===== RESET & BASE ===== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
+    font-family: "Inter", sans-serif;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark);
+    background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
-    line-height: 1.6;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 a {
@@ -67,133 +53,71 @@ ul {
     list-style: none;
 }
 
-/* ===== CONTAINER ===== */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
 /* ================================================
    BACKGROUND & EFFECTS
    ================================================ */
 
 .background {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
+    inset: 0;
+    z-index: -10;
 }
 
+/* основной градиент */
 .gradient-layer {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 15% 20%, var(--glow-cyan), transparent 40%),
-        radial-gradient(circle at 85% 30%, var(--glow-purple), transparent 45%),
-        radial-gradient(circle at 50% 85%, var(--glow-orange), transparent 50%),
-        linear-gradient(180deg, var(--bg-dark), var(--bg-dark-2));
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(0,229,255,0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(138,92,255,0.08), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(255,122,61,0.05), transparent 50%);
 }
 
-/* Chemical Formulas */
+/* ===== КРИСТАЛЛЫ (ГЛАВНЫЙ ВИЗУАЛ) ===== */
+.crystal {
+    position: absolute;
+    width: 300px;
+    height: 500px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.08);
+    transform: rotate(25deg);
+    opacity: 0.6;
+    filter: drop-shadow(0 0 40px rgba(0,229,255,0.2));
+}
+
+.crystal-1 { top: 10%; left: 5%; }
+.crystal-2 { top: 40%; right: 10%; width: 200px; }
+.crystal-3 { bottom: 10%; left: 30%; width: 400px; opacity: 0.4; }
+.crystal-4 { top: 20%; right: 30%; width: 250px; }
+
+/* ===== CHEMICAL TEXT LAYER ===== */
 .chemical-layer {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    opacity: 0.05;
+    font-size: 24px;
+    color: white;
+    padding: 60px;
 }
 
 .chemical-layer span {
-    position: absolute;
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.04);
-    letter-spacing: 2px;
-    animation: float 20s ease-in-out infinite;
+    transform: rotate(-20deg);
 }
 
-.chemical-layer span:nth-child(1) { top: 10%; left: 5%; }
-.chemical-layer span:nth-child(2) { top: 20%; right: 10%; animation-delay: -3s; }
-.chemical-layer span:nth-child(3) { top: 40%; left: 15%; animation-delay: -6s; }
-.chemical-layer span:nth-child(4) { top: 60%; right: 20%; animation-delay: -9s; }
-.chemical-layer span:nth-child(5) { top: 75%; left: 8%; animation-delay: -12s; }
-.chemical-layer span:nth-child(6) { top: 85%; right: 5%; animation-delay: -15s; }
-.chemical-layer span:nth-child(7) { top: 50%; left: 80%; animation-delay: -18s; }
-.chemical-layer span:nth-child(8) { top: 30%; left: 90%; animation-delay: -2s; }
-
-/* Crystals */
-.crystal {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    animation: crystalFloat 8s ease-in-out infinite;
-}
-
-.crystal-1 {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    top: 15%;
-    left: 10%;
-    width: 80px;
-    height: 80px;
-    animation-delay: 0s;
-}
-
-.crystal-2 {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-orange));
-    top: 60%;
-    right: 15%;
-    width: 60px;
-    height: 60px;
-    animation-delay: -2s;
-}
-
-.crystal-3 {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-orange));
-    bottom: 20%;
-    left: 20%;
-    width: 50px;
-    height: 50px;
-    animation-delay: -4s;
-}
-
-.crystal-4 {
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
-    top: 40%;
-    right: 25%;
-    width: 70px;
-    height: 70px;
-    animation-delay: -6s;
-}
-
-/* Animations */
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-}
-
-@keyframes crystalFloat {
-    0%, 100% { transform: translateY(0) rotate(45deg); opacity: 0.6; }
-    50% { transform: translateY(-30px) rotate(55deg); opacity: 1; }
-}
-
-/* ================================================
-   HEADER
-   ================================================ */
-
+/* ===== HEADER ===== */
 header {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
     padding: 20px 0;
-    z-index: 1000;
-    background: linear-gradient(180deg, rgba(5,7,13,0.9), transparent);
+    backdrop-filter: blur(20px);
+    background: rgba(5,7,13,0.6);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    z-index: 100;
 }
 
 header .container {
@@ -202,7 +126,7 @@ header .container {
     align-items: center;
 }
 
-/* Logo */
+/* ===== LOGO ===== */
 .logo {
     display: flex;
     align-items: center;
@@ -212,7 +136,7 @@ header .container {
 .logo-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -221,29 +145,29 @@ header .container {
 }
 
 .logo-core {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     background: white;
     border-radius: 50%;
-    box-shadow: 0 0 20px var(--accent-cyan);
+    box-shadow: 0 0 15px var(--cyan);
 }
 
 .logo-text h1 {
     font-size: 20px;
     font-weight: 800;
-    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .logo-text p {
     font-size: 10px;
-    color: var(--text-muted);
+    color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 2px;
 }
 
-/* Navigation */
+/* ===== NAVIGATION ===== */
 nav {
     display: flex;
     gap: 30px;
@@ -252,7 +176,7 @@ nav {
 nav a {
     font-size: 14px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--muted);
     transition: 0.3s;
     position: relative;
 }
@@ -268,7 +192,7 @@ nav a::after {
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
     transition: 0.3s;
 }
 
@@ -276,7 +200,7 @@ nav a:hover::after {
     width: 100%;
 }
 
-/* Header Buttons */
+/* ===== HEADER BUTTONS ===== */
 .header-buttons {
     display: flex;
     gap: 12px;
@@ -285,7 +209,7 @@ nav a:hover::after {
 .login-button,
 .register-button {
     padding: 10px 20px;
-    border-radius: var(--radius);
+    border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
     transition: 0.3s;
@@ -293,29 +217,26 @@ nav a:hover::after {
 
 .login-button {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--soft);
     color: var(--text);
 }
 
 .login-button:hover {
-    border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
+    border-color: var(--cyan);
+    color: var(--cyan);
 }
 
 .register-button {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    color: var(--bg-dark);
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: var(--bg);
 }
 
 .register-button:hover {
-    box-shadow: 0 0 30px var(--glow-cyan);
+    box-shadow: 0 0 30px rgba(0,229,255,0.4);
     transform: translateY(-2px);
 }
 
-/* ================================================
-   HERO SECTION
-   ================================================ */
-
+/* ===== HERO SECTION ===== */
 .hero {
     min-height: 100vh;
     display: flex;
@@ -334,12 +255,12 @@ nav a:hover::after {
 .hero-label {
     display: inline-block;
     padding: 8px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    border: 1px solid var(--soft);
     border-radius: 50px;
     font-size: 11px;
     font-weight: 600;
-    color: var(--accent-cyan);
+    color: var(--cyan);
     text-transform: uppercase;
     letter-spacing: 3px;
     margin-bottom: 20px;
@@ -350,14 +271,14 @@ nav a:hover::after {
     font-weight: 800;
     line-height: 1.1;
     margin-bottom: 20px;
-    background: linear-gradient(180deg, var(--text), var(--text-secondary));
+    background: linear-gradient(180deg, var(--text), var(--muted));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .hero-left > p {
     font-size: 16px;
-    color: var(--text-secondary);
+    color: var(--muted);
     margin-bottom: 30px;
     line-height: 1.8;
 }
@@ -372,31 +293,31 @@ nav a:hover::after {
 .primary-button,
 .secondary-button {
     padding: 14px 28px;
-    border-radius: var(--radius);
+    border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
     transition: 0.3s;
 }
 
 .primary-button {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    color: var(--bg-dark);
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: var(--bg);
 }
 
 .primary-button:hover {
-    box-shadow: 0 0 40px var(--glow-cyan);
+    box-shadow: 0 0 40px rgba(0,229,255,0.4);
     transform: translateY(-3px);
 }
 
 .secondary-button {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--soft);
     color: var(--text);
 }
 
 .secondary-button:hover {
-    border-color: var(--accent-purple);
-    color: var(--accent-purple);
+    border-color: var(--violet);
+    color: var(--violet);
 }
 
 /* Hero Stats */
@@ -408,14 +329,14 @@ nav a:hover::after {
 .stat h3 {
     font-size: 32px;
     font-weight: 800;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .stat span {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -440,7 +361,7 @@ nav a:hover::after {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-orange));
+    background: linear-gradient(135deg, var(--cyan), var(--violet), var(--orange));
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     animation: crystalPulse 4s ease-in-out infinite;
 }
@@ -460,21 +381,21 @@ nav a:hover::after {
 .ring1 {
     width: 120%;
     height: 120%;
-    border-color: var(--accent-cyan);
+    border-color: var(--cyan);
     animation-delay: 0s;
 }
 
 .ring2 {
     width: 140%;
     height: 140%;
-    border-color: var(--accent-purple);
+    border-color: var(--violet);
     animation-delay: -1s;
 }
 
 .ring3 {
     width: 160%;
     height: 160%;
-    border-color: var(--accent-orange);
+    border-color: var(--orange);
     animation-delay: -2s;
 }
 
@@ -484,10 +405,7 @@ nav a:hover::after {
     100% { transform: scale(1.2); opacity: 0; }
 }
 
-/* ================================================
-   SECTION STYLES
-   ================================================ */
-
+/* ===== SECTION STYLES ===== */
 .section-header {
     text-align: center;
     margin-bottom: 50px;
@@ -496,12 +414,12 @@ nav a:hover::after {
 .section-tag {
     display: inline-block;
     padding: 6px 14px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    background: var(--panel);
+    border: 1px solid var(--soft);
     border-radius: 50px;
     font-size: 10px;
     font-weight: 700;
-    color: var(--accent-purple);
+    color: var(--violet);
     text-transform: uppercase;
     letter-spacing: 3px;
     margin-bottom: 16px;
@@ -515,15 +433,12 @@ nav a:hover::after {
 
 .section-header p {
     font-size: 16px;
-    color: var(--text-secondary);
+    color: var(--muted);
     max-width: 500px;
     margin: 0 auto;
 }
 
-/* ================================================
-   SERVERS SECTION
-   ================================================ */
-
+/* ===== SERVERS SECTION ===== */
 .servers-section {
     padding: 100px 0;
 }
@@ -536,9 +451,9 @@ nav a:hover::after {
 
 .server-card {
     position: relative;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    background: var(--panel);
+    border: 1px solid var(--soft);
+    border-radius: 16px;
     padding: 24px;
     overflow: hidden;
     transition: 0.3s;
@@ -546,8 +461,8 @@ nav a:hover::after {
 
 .server-card:hover {
     transform: translateY(-8px);
-    border-color: var(--border-hover);
-    box-shadow: var(--shadow);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 .server-background {
@@ -556,13 +471,13 @@ nav a:hover::after {
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0.05;
+    opacity: 0.08;
     z-index: -1;
 }
 
-.crystal-blue { background: linear-gradient(135deg, var(--accent-cyan), transparent); }
-.crystal-purple { background: linear-gradient(135deg, var(--accent-purple), transparent); }
-.crystal-orange { background: linear-gradient(135deg, var(--accent-orange), transparent); }
+.crystal-blue { background: linear-gradient(135deg, var(--cyan), transparent); }
+.crystal-purple { background: linear-gradient(135deg, var(--violet), transparent); }
+.crystal-orange { background: linear-gradient(135deg, var(--orange), transparent); }
 
 .server-top {
     display: flex;
@@ -587,7 +502,7 @@ nav a:hover::after {
 
 .players {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--muted);
 }
 
 .server-card h3 {
@@ -598,7 +513,7 @@ nav a:hover::after {
 
 .server-card > p {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--muted);
     margin-bottom: 20px;
     line-height: 1.6;
 }
@@ -606,22 +521,19 @@ nav a:hover::after {
 .card-button {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    color: var(--bg-dark);
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    color: var(--bg);
     font-weight: 600;
-    border-radius: var(--radius);
+    border-radius: 10px;
     transition: 0.3s;
 }
 
 .card-button:hover {
-    box-shadow: 0 0 30px var(--glow-cyan);
+    box-shadow: 0 0 30px rgba(0,229,255,0.4);
     transform: translateY(-2px);
 }
 
-/* ================================================
-   FEATURES SECTION
-   ================================================ */
-
+/* ===== FEATURES SECTION ===== */
 .features {
     padding: 80px 0;
 }
@@ -633,16 +545,16 @@ nav a:hover::after {
 }
 
 .feature-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    background: var(--panel);
+    border: 1px solid var(--soft);
+    border-radius: 16px;
     padding: 32px;
     text-align: center;
     transition: 0.3s;
 }
 
 .feature-card:hover {
-    border-color: var(--accent-purple);
+    border-color: var(--violet);
     transform: translateY(-5px);
 }
 
@@ -650,7 +562,7 @@ nav a:hover::after {
     width: 60px;
     height: 60px;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -673,21 +585,18 @@ nav a:hover::after {
 
 .feature-card p {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--muted);
 }
 
-/* ================================================
-   SHOP SECTION
-   ================================================ */
-
+/* ===== SHOP SECTION ===== */
 .shop-section {
     padding: 100px 0;
 }
 
 .shop-banner {
     background: linear-gradient(135deg, rgba(138,92,255,0.1), rgba(0,229,255,0.1));
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border: 1px solid var(--soft);
+    border-radius: 16px;
     padding: 60px;
     display: flex;
     justify-content: space-between;
@@ -705,7 +614,7 @@ nav a:hover::after {
     border-radius: 50px;
     font-size: 10px;
     font-weight: 700;
-    color: var(--accent-purple);
+    color: var(--violet);
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 16px;
@@ -719,28 +628,25 @@ nav a:hover::after {
 
 .shop-left p {
     font-size: 16px;
-    color: var(--text-secondary);
+    color: var(--muted);
 }
 
 .shop-button {
     padding: 16px 32px;
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-orange));
+    background: linear-gradient(135deg, var(--violet), var(--orange));
     color: white;
     font-weight: 600;
     font-size: 14px;
-    border-radius: var(--radius);
+    border-radius: 10px;
     transition: 0.3s;
 }
 
 .shop-button:hover {
-    box-shadow: 0 0 40px var(--glow-purple);
+    box-shadow: 0 0 40px rgba(138,92,255,0.4);
     transform: translateY(-3px);
 }
 
-/* ================================================
-   RULES SECTION
-   ================================================ */
-
+/* ===== RULES SECTION ===== */
 .rules-section {
     padding: 100px 0;
 }
@@ -752,22 +658,22 @@ nav a:hover::after {
 }
 
 .rule-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    background: var(--panel);
+    border: 1px solid var(--soft);
+    border-radius: 16px;
     padding: 32px;
     transition: 0.3s;
 }
 
 .rule-card:hover {
-    border-color: var(--accent-orange);
+    border-color: var(--orange);
     transform: translateY(-5px);
 }
 
 .rule-number {
     font-size: 48px;
     font-weight: 800;
-    background: linear-gradient(135deg, var(--accent-orange), var(--accent-cyan));
+    background: linear-gradient(135deg, var(--orange), var(--cyan));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 16px;
@@ -781,17 +687,14 @@ nav a:hover::after {
 
 .rule-card p {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--muted);
     line-height: 1.6;
 }
 
-/* ================================================
-   FOOTER
-   ================================================ */
-
+/* ===== FOOTER ===== */
 footer {
     padding: 80px 0 40px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--soft);
     background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3));
 }
 
@@ -805,7 +708,7 @@ footer {
 .footer-logo {
     font-size: 24px;
     font-weight: 800;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 12px;
@@ -813,7 +716,7 @@ footer {
 
 .footer-grid > div:first-child p {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--muted);
     max-width: 250px;
 }
 
@@ -826,14 +729,14 @@ footer {
 
 .footer-grid ul li {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--muted);
     margin-bottom: 8px;
     cursor: pointer;
     transition: 0.3s;
 }
 
 .footer-grid ul li:hover {
-    color: var(--accent-cyan);
+    color: var(--cyan);
 }
 
 .footer-status {
@@ -841,7 +744,7 @@ footer {
     align-items: center;
     gap: 8px;
     font-size: 14px;
-    color: var(--text-secondary);
+    color: var(--muted);
 }
 
 .status-dot {
@@ -861,15 +764,12 @@ footer {
 .footer-bottom {
     text-align: center;
     padding-top: 40px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--soft);
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--muted);
 }
 
-/* ================================================
-   MOBILE STYLES
-   ================================================ */
-
+/* ===== MOBILE STYLES ===== */
 @media (max-width: 1024px) {
     nav { display: none; }
     
