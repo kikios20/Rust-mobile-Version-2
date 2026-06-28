@@ -70,3 +70,55 @@ button, .server-card, .rule-card {
 input, button {
     font-size: 16px;
 }
+
+/* =========================
+   BURGER MENU
+========================= */
+
+.burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.burger span {
+    width: 24px;
+    height: 2px;
+    background: white;
+    transition: 0.3s;
+}
+
+/* mobile menu */
+
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    height: 100vh;
+    background: rgba(10,12,20,0.95);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    padding: 80px 30px;
+    gap: 20px;
+    transition: 0.4s;
+    z-index: 999;
+}
+
+.mobile-menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.mobile-menu.active {
+    right: 0;
+}
+
+@media (max-width: 1024px) {
+    .burger {
+        display: flex;
+    }
+}
