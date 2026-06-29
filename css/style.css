@@ -786,6 +786,13 @@ footer li {
 @media (max-width: 1024px) {
     nav { display: none; }
     .burger { display: flex; }
+    .hero {
+        height: auto;
+        min-height: 100dvh;
+        align-items: flex-start;
+        padding-top: 110px;
+        padding-bottom: 40px;
+    }
     .hero-container {
         flex-direction: column;
         text-align: center;
@@ -793,7 +800,7 @@ footer li {
     .hero-right {
         width: 280px;
         height: 280px;
-        margin: 0 auto;
+        margin: 30px auto 0;
     }
     .hero-buttons { justify-content: center; }
     .hero-stats { justify-content: center; }
