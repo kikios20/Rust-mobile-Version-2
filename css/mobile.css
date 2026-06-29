@@ -60,7 +60,11 @@
     .crystal,
     .main-crystal,
     .energy-ring,
-    .logo-icon {
+    .logo-icon,
+    .hero-left > *,
+    .hero-right {
         animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
     }
-   }
+}
