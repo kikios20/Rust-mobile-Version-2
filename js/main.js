@@ -26,4 +26,17 @@ if (burger && menu) {
 // divs (like .feature-card) unless there's a touch listener present
 // somewhere on the page. This empty listener "wakes up" :active
 // styling site-wide without changing any behavior.
-document.addEventListener('touchstart', function() {}, true);
+// Use a JS-driven "pressed" class instead of CSS :active, since
+// :active on mobile only tracks the exact element the touch started
+// on and can behave inconsistently across a card's full surface.
+document.querySelectorAll('.server-card, .rule-card, .feature-card').forEach(function(card) {
+    card.addEventListener('touchstart', function() {
+        card.classList.add('pressed');
+    }, { passive: true });
+    card.addEventListener('touchend', function() {
+        card.classList.remove('pressed');
+    });
+    card.addEventListener('touchcancel', function() {
+        card.classList.remove('pressed');
+    });
+});

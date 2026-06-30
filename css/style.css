@@ -1044,9 +1044,9 @@ footer li {
 }
 
 
-.server-card:active,
-.rule-card:active,
-.feature-card:active {
+.server-card.pressed,
+.rule-card.pressed,
+.feature-card.pressed {
     transform: scale(0.97);
     transition: transform 0.15s ease;
 }
