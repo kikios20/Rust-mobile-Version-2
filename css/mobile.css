@@ -4,9 +4,19 @@
 
 @media (max-width: 768px) {
     :root {
-        --blur-card: 8px;
-        --blur-banner: 10px;
-        --blur-menu: 10px;
+        --blur-card: 0px;
+        --blur-banner: 0px;
+        --blur-menu: 0px;
+    }
+
+    .server-card,
+    .rule-card,
+    .feature-card {
+        background: rgba(20, 22, 30, 0.85);
+    }
+
+    .shop-banner {
+        background: rgba(15, 20, 30, 0.9);
     }
 
     header {
