@@ -670,6 +670,8 @@ button:disabled {
     padding: 32px;
     text-align: center;
     transition: 0.3s;
+    position: relative;
+    z-index: 1;
 }
 
 
@@ -680,6 +682,8 @@ button:disabled {
 
 
 .feature-icon {
+    position: relative;
+    z-index: 2;
     width: 60px;
     height: 60px;
     margin: 0 auto 20px;
