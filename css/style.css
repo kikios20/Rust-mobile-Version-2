@@ -75,6 +75,7 @@ ul {
 .background {
     position: fixed;
     inset: 0;
+    contain: strict;
 }
 
 
