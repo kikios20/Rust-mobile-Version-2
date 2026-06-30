@@ -589,6 +589,26 @@ nav a:hover::after {
     border: 1px solid rgba(0,255,100,0.3);
 }
 
+.status.soon {
+    background: rgba(255,255,255,0.08);
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.card-button:disabled:hover,
+.shop-button:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.footer-grid > div:nth-child(3) ul li.soon {
+    opacity: 0.6;
+}
 
 .players {
     font-size: 12px;
