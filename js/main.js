@@ -22,3 +22,8 @@ if (burger && menu) {
         });
     });
 }
+// Mobile browsers often don't trigger the CSS :active state on plain
+// divs (like .feature-card) unless there's a touch listener present
+// somewhere on the page. This empty listener "wakes up" :active
+// styling site-wide without changing any behavior.
+document.addEventListener('touchstart', function() {}, true);
