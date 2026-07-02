@@ -44,8 +44,14 @@ pool.query(`
     agreed_to_terms BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW()
   )
-`).then(() => console.log('Database ready'))
-  .catch(err => console.error('DB init error:', err));
+`).then(() => {
+  console.log('Database ready');
+  return pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS balance INTEGER DEFAULT 0`);
+}).then(() => {
+  return pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT false`);
+}).then(() => {
+  return pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason VARCHAR(255)`);
+}).catch(err => console.error('DB init error:', err));
 
 
 // Простая защита от брутфорса (не более 10 запросов в минуту с одного IP)
@@ -215,7 +221,7 @@ function authMiddleware(req, res, next) {
 app.get('/profile', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, username, email, created_at FROM users WHERE id = $1',
+      'SELECT id, username, email, created_at, balance FROM users WHERE id = $1',
       [req.user.id]
     );
     if (result.rows.length === 0) {
@@ -227,10 +233,69 @@ app.get('/profile', authMiddleware, async (req, res) => {
       username: user.username,
       email: user.email,
       created_at: user.created_at,
-      balance: 0
+      balance: user.balance || 0
     });
   } catch (err) {
     console.error('Profile error:', err.message);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
+// Проверка прав администратора
+function adminMiddleware(req, res, next) {
+  if (req.user.id !== 1) {
+    return res.status(403).json({ error: 'Нет доступа' });
+  }
+  next();
+}
+
+
+// Список всех пользователей (только для админа)
+app.get('/admin/users', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, username, email, created_at, balance FROM users ORDER BY id ASC'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
+// Изменить баланс пользователя (только для админа)
+app.post('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => {
+  const { userId, amount, comment } = req.body;
+  if (!userId || amount === undefined) {
+    return res.status(400).json({ error: 'Укажите userId и amount' });
+  }
+  try {
+    const result = await pool.query(
+      'UPDATE users SET balance = balance + $1 WHERE id = $2 RETURNING id, username, balance',
+      [amount, userId]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Пользователь не найден' });
+    }
+    res.json({ success: true, user: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
+// Забанить/разбанить пользователя (только для админа)
+app.post('/admin/ban', authMiddleware, adminMiddleware, async (req, res) => {
+  const { userId, reason } = req.body;
+  if (!userId) return res.status(400).json({ error: 'Укажите userId' });
+  try {
+    await pool.query(
+      'UPDATE users SET is_banned = true, ban_reason = $1 WHERE id = $2',
+      [reason || 'Без причины', userId]
+    );
+    res.json({ success: true });
+  } catch (err) {
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });

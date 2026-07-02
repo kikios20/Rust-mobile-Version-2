@@ -133,6 +133,9 @@
 
 
 <!-- Кнопка выхода -->
+<div id="adminLink" style="display:none; margin-bottom:16px;">
+<a href="admin.html" style="display:block; width:100%; padding:13px; background:linear-gradient(135deg,#ff7a3d,#8a5cff); border:none; border-radius:12px; color:#fff; font-weight:700; font-size:15px; cursor:pointer; text-align:center; text-decoration:none;">⚙️ Панель администратора</a>
+</div>
 <button onclick="logout()" style="width:100%; padding:13px; background:transparent; border:1px solid rgba(255,80,80,0.4); border-radius:12px; color:#ff5555; font-size:15px; cursor:pointer;">Выйти из аккаунта</button>
 
 
@@ -232,6 +235,11 @@ async function loadProfile() {
         document.getElementById('profileEmail').textContent = user.email;
         document.getElementById('profileBalance').textContent = `${user.balance || 0} ₴`;
         document.getElementById('profileDate').textContent = new Date(user.created_at).toLocaleDateString('ru-RU');
+
+        // Показываем кнопку админки только для ID #1
+        if (user.id === 1) {
+            document.getElementById('adminLink').style.display = 'block';
+        }
 
 
     } catch (err) {

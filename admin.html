@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ панель — Element Rust</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+
+
+<div class="background">
+<div class="gradient-layer"></div>
+<div class="crystal crystal-1"></div>
+<div class="crystal crystal-2"></div>
+<div class="crystal crystal-3"></div>
+<div class="crystal crystal-4"></div>
+<div class="chemical-layer">
+<span>NaCl</span><span>H₂O</span><span>CO₂</span><span>CuSO₄</span><span>H₂SO₄</span><span>Fe₂O₃</span><span>CH₄</span><span>NH₃</span>
+</div>
+</div>
+
+
+<header>
+<div class="container">
+<div class="logo" onclick="window.location='index.html'" style="cursor:pointer;">
+<div class="logo-icon"><div class="logo-core"></div></div>
+<div class="logo-text"><h1>ELEMENT RUST</h1><p>Admin Panel</p></div>
+</div>
+<div style="display:flex; gap:10px;">
+<a href="profile.html" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:13px; cursor:pointer; text-decoration:none;">Профиль</a>
+<button onclick="logout()" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,80,80,0.4); border-radius:8px; color:#ff5555; font-size:13px; cursor:pointer;">Выйти</button>
+</div>
+</div>
+</header>
+
+
+<section style="padding-top:120px; padding-bottom:60px;">
+<div class="container">
+
+
+<div id="noAccess" style="display:none; text-align:center; padding:60px 0;">
+<div style="font-size:60px; margin-bottom:20px;">🚫</div>
+<h2 style="color:#fff;">Нет доступа</h2>
+<p style="color:rgba(255,255,255,0.5); margin-bottom:30px;">Эта страница только для администратора</p>
+<a href="index.html" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:12px; color:#000; font-weight:700; text-decoration:none;">На главную</a>
+</div>
+
+
+<div id="adminContent" style="display:none;">
+<h2 style="color:#fff; margin-bottom:8px;">Админ панель</h2>
+<p style="color:rgba(255,255,255,0.4); margin-bottom:40px;">Управление пользователями Element Rust</p>
+
+
+<!-- Статистика -->
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:40px;">
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; text-align:center;">
+<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ИГРОКОВ</p>
+<p id="totalUsers" style="color:#00e5ff; font-size:28px; font-weight:700;">—</p>
+</div>
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; text-align:center;">
+<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ЗАБАНЕНО</p>
+<p id="totalBanned" style="color:#ff5555; font-size:28px; font-weight:700;">—</p>
+</div>
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; text-align:center;">
+<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">АКТИВНЫХ</p>
+<p id="totalActive" style="color:#00ff88; font-size:28px; font-weight:700;">—</p>
+</div>
+</div>
+
+
+<!-- Управление балансом -->
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:24px;">
+<h3 style="color:#fff; margin-bottom:20px;">Управление балансом</h3>
+<div style="display:flex; gap:10px; flex-wrap:wrap;">
+<input id="balanceUserId" type="number" placeholder="ID пользователя" style="flex:1; min-width:120px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
+<input id="balanceAmount" type="number" placeholder="Сумма (+ или -)" style="flex:1; min-width:120px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
+<input id="balanceComment" type="text" placeholder="Комментарий" style="flex:2; min-width:160px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
+<button onclick="changeBalance()" style="padding:10px 20px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Применить</button>
+</div>
+<div id="balanceResult" style="color:#00ff88; font-size:13px; margin-top:10px;"></div>
+</div>
+
+
+<!-- Бан -->
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:24px;">
+<h3 style="color:#fff; margin-bottom:20px;">Заблокировать игрока</h3>
+<div style="display:flex; gap:10px; flex-wrap:wrap;">
+<input id="banUserId" type="number" placeholder="ID пользователя" style="flex:1; min-width:120px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
+<input id="banReason" type="text" placeholder="Причина бана" style="flex:2; min-width:160px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
+<button onclick="banUser()" style="padding:10px 20px; background:linear-gradient(135deg,#ff5555,#ff0000); border:none; border-radius:10px; color:#fff; font-weight:700; cursor:pointer;">Забанить</button>
+</div>
+<div id="banResult" style="color:#ff5555; font-size:13px; margin-top:10px;"></div>
+</div>
+
+
+<!-- Список пользователей -->
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;">
+<h3 style="color:#fff; margin-bottom:20px;">Все пользователи</h3>
+<div id="usersList"></div>
+</div>
+
+
+</div>
+</div>
+</div>
+</section>
+
+
+<script>
+const API = 'https://rust-mobile-version-2.onrender.com';
+
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    window.location.href = 'index.html';
+}
+
+
+async function loadAdmin() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        document.getElementById('noAccess').style.display = 'block';
+        return;
+    }
+
+
+    try {
+        const res = await fetch(`${API}/admin/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+
+        if (!res.ok) {
+            document.getElementById('noAccess').style.display = 'block';
+            return;
+        }
+
+
+        const users = await res.json();
+        document.getElementById('adminContent').style.display = 'block';
+
+
+        const banned = users.filter(u => u.is_banned).length;
+        document.getElementById('totalUsers').textContent = users.length;
+        document.getElementById('totalBanned').textContent = banned;
+        document.getElementById('totalActive').textContent = users.length - banned;
+
+
+        const list = document.getElementById('usersList');
+        list.innerHTML = users.map(u => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:8px;">
+                <div>
+                    <span style="color:#00e5ff; font-family:monospace; font-size:12px;">#${u.id}</span>
+                    <span style="color:#fff; margin-left:10px; font-weight:600;">${u.username}</span>
+                    ${u.is_banned ? '<span style="background:rgba(255,80,80,0.2); color:#ff5555; font-size:11px; padding:2px 8px; border-radius:20px; margin-left:8px;">ЗАБАНЕН</span>' : ''}
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span style="color:rgba(255,255,255,0.4); font-size:12px;">${u.email}</span>
+                    <span style="color:#00e5ff; font-size:12px;">💰 ${u.balance || 0}</span>
+                </div>
+            </div>
+        `).join('');
+
+
+    } catch (err) {
+        document.getElementById('noAccess').style.display = 'block';
+    }
+}
+
+
+async function changeBalance() {
+    const token = localStorage.getItem('token');
+    const userId = document.getElementById('balanceUserId').value;
+    const amount = document.getElementById('balanceAmount').value;
+    const comment = document.getElementById('balanceComment').value;
+
+
+    const res = await fetch(`${API}/admin/balance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ userId: parseInt(userId), amount: parseInt(amount), comment })
+    });
+    const data = await res.json();
+    const el = document.getElementById('balanceResult');
+    if (res.ok) {
+        el.style.color = '#00ff88';
+        el.textContent = `✓ Баланс обновлён. ${data.user.username}: ${data.user.balance} ₴`;
+        loadAdmin();
+    } else {
+        el.style.color = '#ff5555';
+        el.textContent = `✗ ${data.error}`;
+    }
+}
+
+
+async function banUser() {
+    const token = localStorage.getItem('token');
+    const userId = document.getElementById('banUserId').value;
+    const reason = document.getElementById('banReason').value;
+
+
+    const res = await fetch(`${API}/admin/ban`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ userId: parseInt(userId), reason })
+    });
+    const data = await res.json();
+    const el = document.getElementById('banResult');
+    if (res.ok) {
+        el.style.color = '#00ff88';
+        el.textContent = '✓ Пользователь заблокирован';
+        loadAdmin();
+    } else {
+        el.style.color = '#ff5555';
+        el.textContent = `✗ ${data.error}`;
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', loadAdmin);
+</script>
+
+
+</body>
+</html>
