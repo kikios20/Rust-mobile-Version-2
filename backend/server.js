@@ -152,23 +152,17 @@ app.post('/register', rateLimit, async (req, res) => {
 
 // Вход
 app.post('/login', rateLimit, async (req, res) => {
-  const { email, password } = req.body;
-
-
-  if (!email || !password) {
+  const { login, password } = req.body;
+  if (!login || !password) {
     return res.status(400).json({ error: 'Заполните все поля' });
   }
-
-
-  if (!validateEmail(email)) {
-    return res.status(400).json({ error: 'Неверный формат email' });
-  }
-
+  const isEmail = validateEmail(login);
+  const email = login;
 
   try {
     const result = await pool.query(
-      'SELECT id, username, password_hash FROM users WHERE email = $1',
-      [email.toLowerCase().trim()]
+      'SELECT id, username, password_hash FROM users WHERE email = LOWER($1) OR LOWER(username) = LOWER($1)',
+      [login.trim()]
     );
 
 
@@ -176,14 +170,14 @@ app.post('/login', rateLimit, async (req, res) => {
     // (чтобы нельзя было угадать, существует ли email)
     if (result.rows.length === 0) {
       await bcrypt.hash('dummy', 12); // имитируем задержку
-      return res.status(400).json({ error: 'Неверный email или пароль' });
+      return res.status(400).json({ error: 'Неверный логин или пароль' });
     }
 
 
     const user = result.rows[0];
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
-      return res.status(400).json({ error: 'Неверный email или пароль' });
+      return res.status(400).json({ error: 'Неверный логин или пароль' });
     }
 
 
