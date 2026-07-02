@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Профиль — Element Rust</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+
+
+<div class="background">
+<div class="gradient-layer"></div>
+<div class="crystal crystal-1"></div>
+<div class="crystal crystal-2"></div>
+<div class="crystal crystal-3"></div>
+<div class="crystal crystal-4"></div>
+<div class="particles"></div>
+<div class="chemical-layer">
+<span>NaCl</span><span>H₂O</span><span>CO₂</span><span>CuSO₄</span><span>H₂SO₄</span><span>Fe₂O₃</span><span>CH₄</span><span>NH₃</span>
+</div>
+</div>
+
+
+<header>
+<div class="container">
+<div class="logo" onclick="window.location='index.html'" style="cursor:pointer;">
+<div class="logo-icon"><div class="logo-core"></div></div>
+<div class="logo-text"><h1>ELEMENT RUST</h1><p>New Generation Rust Servers</p></div>
+</div>
+<div class="header-buttons" id="headerButtons"></div>
+<div style="display:flex; align-items:center; gap:12px;">
+<button id="headerLoginBtn" onclick="window.location='index.html'" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:13px; cursor:pointer; display:none;">На главную</button>
+<div class="burger" id="burger"><span></span><span></span><span></span></div>
+</div>
+</div>
+</header>
+
+
+<div class="mobile-menu" id="mobileMenu">
+<button onclick="document.getElementById('mobileMenu').classList.remove('active')" style="position:absolute; top:20px; right:20px; background:none; border:none; color:rgba(255,255,255,0.6); font-size:24px; cursor:pointer;">✕</button>
+<div style="border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:20px; margin-bottom:20px;">
+<div id="mobileUserInfo" style="text-align:center;">
+<div id="mobileAvatar" style="width:50px; height:50px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#000; font-weight:700;"></div>
+<div id="mobileUsername" style="color:#00e5ff; font-weight:700; font-size:16px; margin-bottom:4px;"></div>
+<button onclick="logout()" style="background:none; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:rgba(255,255,255,0.6); font-size:12px; padding:5px 12px; cursor:pointer; margin-top:6px;">Выйти</button>
+</div>
+</div>
+<div style="display:flex; flex-direction:column; gap:4px;">
+<a href="index.html" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🏠 Главная</a>
+<a href="index.html#servers" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🖥 Серверы</a>
+<a href="index.html#features" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">⚡ Преимущества</a>
+<a href="index.html#shop" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🛒 Магазин</a>
+</div>
+<div style="margin-top:16px; display:flex; flex-direction:column; gap:4px;">
+<p style="color:rgba(255,255,255,0.3); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ПРАВОВЫЕ ДОКУМЕНТЫ</p>
+<a href="rules.html" style="padding:8px 0; color:rgba(255,255,255,0.5); font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05);">Правила</a>
+<a href="terms.html" style="padding:8px 0; color:rgba(255,255,255,0.5); font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05);">Соглашение</a>
+<a href="privacy.html" style="padding:8px 0; color:rgba(255,255,255,0.5); font-size:14px;">Конфиденциальность</a>
+</div>
+</div>
+
+
+<section style="padding-top:120px; padding-bottom:60px;">
+<div class="container">
+
+
+<div id="notLoggedIn" style="display:none; text-align:center; padding:60px 0;">
+<div style="font-size:60px; margin-bottom:20px;">🔒</div>
+<h2 style="color:#fff; margin-bottom:12px;">Нужна авторизация</h2>
+<p style="color:rgba(255,255,255,0.5); margin-bottom:30px;">Войдите в аккаунт чтобы просмотреть профиль</p>
+<a href="index.html" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:12px; color:#000; font-weight:700; text-decoration:none;">Войти</a>
+</div>
+
+
+<div id="profileContent" style="display:none; max-width:600px; margin:0 auto;">
+
+
+<!-- Аватар и основная инфо -->
+<div style="text-align:center; margin-bottom:40px;">
+<div id="profileAvatar" style="width:90px; height:90px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:40px; color:#000; font-weight:800;"></div>
+<h2 id="profileUsername" style="color:#fff; font-size:24px; margin-bottom:4px;"></h2>
+<p id="profileId" style="color:rgba(255,255,255,0.4); font-size:13px;"></p>
+</div>
+
+
+<!-- Карточки инфо -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px;">
+<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">БАЛАНС</p>
+<p id="profileBalance" style="color:#00e5ff; font-size:24px; font-weight:700;">0 ₴</p>
+<p style="color:rgba(255,255,255,0.3); font-size:11px; margin-top:4px;">Внутриигровая валюта</p>
+</div>
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px;">
+<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">СТАТУС</p>
+<p style="color:#00ff88; font-size:16px; font-weight:700;">✓ Активен</p>
+<p style="color:rgba(255,255,255,0.3); font-size:11px; margin-top:4px;">Аккаунт в порядке</p>
+</div>
+</div>
+
+
+<!-- Детали аккаунта -->
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:24px;">
+<h3 style="color:#fff; font-size:16px; margin-bottom:20px;">Данные аккаунта</h3>
+<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
+<span style="color:rgba(255,255,255,0.4); font-size:14px;">ID</span>
+<span id="profileIdDetail" style="color:#fff; font-size:14px; font-family:monospace;"></span>
+</div>
+<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
+<span style="color:rgba(255,255,255,0.4); font-size:14px;">Никнейм</span>
+<span id="profileUsernameDetail" style="color:#fff; font-size:14px;"></span>
+</div>
+<div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
+<span style="color:rgba(255,255,255,0.4); font-size:14px;">Email</span>
+<span id="profileEmail" style="color:#fff; font-size:14px;"></span>
+</div>
+<div style="display:flex; justify-content:space-between; padding:12px 0;">
+<span style="color:rgba(255,255,255,0.4); font-size:14px;">Дата регистрации</span>
+<span id="profileDate" style="color:#fff; font-size:14px;"></span>
+</div>
+</div>
+
+
+<!-- История покупок -->
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:24px;">
+<h3 style="color:#fff; font-size:16px; margin-bottom:16px;">История покупок</h3>
+<p style="color:rgba(255,255,255,0.3); font-size:14px; text-align:center; padding:20px 0;">Покупок пока нет</p>
+</div>
+
+
+<!-- Кнопка выхода -->
+<button onclick="logout()" style="width:100%; padding:13px; background:transparent; border:1px solid rgba(255,80,80,0.4); border-radius:12px; color:#ff5555; font-size:15px; cursor:pointer;">Выйти из аккаунта</button>
+
+
+</div>
+</div>
+</div>
+</section>
+
+
+<footer>
+<div class="container">
+<div class="footer-grid">
+<div><div class="footer-logo">ELEMENT RUST</div><p>Лаборатория нового поколения серверов Rust.</p></div>
+<div><h4>Навигация</h4>
+<ul style="position:relative; z-index:5;">
+<li><a href="index.html">Главная</a></li>
+<li><a href="index.html#servers">Серверы</a></li>
+<li><a href="index.html#shop">Магазин</a></li>
+<li><a href="rules.html">Правила</a></li>
+<li><a href="terms.html">Соглашение</a></li>
+<li><a href="privacy.html">Конфиденциальность</a></li>
+</ul></div>
+<div><h4>Сообщество</h4><ul><li class="soon">Discord — скоро</li><li class="soon">Telegram — скоро</li></ul></div>
+<div><h4>Статус</h4><div class="footer-status"><span class="status-dot"></span>Все серверы работают</div></div>
+</div>
+<div style="text-align:center; margin-top:20px; display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+<a href="terms.html" style="color:var(--muted); font-size:12px;">Пользовательское соглашение</a>
+<a href="privacy.html" style="color:var(--muted); font-size:12px;">Политика конфиденциальности</a>
+</div>
+<div class="footer-bottom">© 2026 ELEMENT RUST. Все права защищены.</div>
+</div>
+</footer>
+
+
+<script>
+const API = 'https://rust-mobile-version-2.onrender.com';
+
+
+const burger = document.getElementById('burger');
+const menu = document.getElementById('mobileMenu');
+if (burger && menu) {
+    burger.addEventListener('click', () => menu.classList.toggle('active'));
+    menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => menu.classList.remove('active'));
+    });
+}
+
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    window.location.href = 'index.html';
+}
+
+
+async function loadProfile() {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+
+
+    if (!token || !username) {
+        document.getElementById('notLoggedIn').style.display = 'block';
+        return;
+    }
+
+
+    // Показываем в бургер-меню
+    const mobileAvatar = document.getElementById('mobileAvatar');
+    const mobileUsername = document.getElementById('mobileUsername');
+    if (mobileAvatar) mobileAvatar.textContent = username[0].toUpperCase();
+    if (mobileUsername) mobileUsername.textContent = username;
+
+
+    try {
+        const res = await fetch(`${API}/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+
+        if (!res.ok) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            document.getElementById('notLoggedIn').style.display = 'block';
+            return;
+        }
+
+
+        const user = await res.json();
+
+
+        document.getElementById('profileContent').style.display = 'block';
+        document.getElementById('profileAvatar').textContent = user.username[0].toUpperCase();
+        document.getElementById('profileUsername').textContent = user.username;
+        document.getElementById('profileId').textContent = `ID: #${user.id}`;
+        document.getElementById('profileIdDetail').textContent = `#${user.id}`;
+        document.getElementById('profileUsernameDetail').textContent = user.username;
+        document.getElementById('profileEmail').textContent = user.email;
+        document.getElementById('profileBalance').textContent = `${user.balance || 0} ₴`;
+        document.getElementById('profileDate').textContent = new Date(user.created_at).toLocaleDateString('ru-RU');
+
+
+    } catch (err) {
+        document.getElementById('notLoggedIn').style.display = 'block';
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
+
+
+</body>
+</html>
