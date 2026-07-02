@@ -137,13 +137,33 @@
 
 
 <div class="mobile-menu" id="mobileMenu">
-    <a href="#">Главная</a>
-    <a href="#servers">Серверы</a>
-    <a href="#features">Преимущества</a>
-    <a href="#shop">Магазин</a>
-    <a href="rules.html">Правила</a>
-<a href="terms.html">Соглашение</a>
-<a href="privacy.html">Конфиденциальность</a>
+<div style="border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:20px; margin-bottom:20px;">
+<div id="mobileAuthButtons">
+<button onclick="openModal('login'); menu.classList.remove('active')" style="width:100%; padding:12px; background:transparent; border:1px solid rgba(255,255,255,0.15); border-radius:10px; color:#fff; font-size:15px; cursor:pointer; margin-bottom:10px;">Войти</button>
+<button onclick="openModal('register'); menu.classList.remove('active')" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Регистрация</button>
+</div>
+<div id="mobileUserInfo" style="display:none; text-align:center;">
+<div style="width:50px; height:50px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:22px;">👤</div>
+<div id="mobileUsername" style="color:#00e5ff; font-weight:700; font-size:16px; margin-bottom:4px;"></div>
+<button onclick="logout()" style="background:none; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:rgba(255,255,255,0.6); font-size:12px; padding:5px 12px; cursor:pointer; margin-top:6px;">Выйти</button>
+</div>
+</div>
+
+
+<div style="display:flex; flex-direction:column; gap:4px;">
+<a href="index.html" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🏠 Главная</a>
+<a href="#servers" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🖥 Серверы</a>
+<a href="#features" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">⚡ Преимущества</a>
+<a href="#shop" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🛒 Магазин</a>
+</div>
+
+
+<div style="margin-top:16px; display:flex; flex-direction:column; gap:4px;">
+<p style="color:rgba(255,255,255,0.3); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ПРАВОВЫЕ ДОКУМЕНТЫ</p>
+<a href="rules.html" style="padding:8px 0; color:rgba(255,255,255,0.5); font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05);">Правила</a>
+<a href="terms.html" style="padding:8px 0; color:rgba(255,255,255,0.5); font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05);">Соглашение</a>
+<a href="privacy.html" style="padding:8px 0; color:rgba(255,255,255,0.5); font-size:14px;">Конфиденциальность</a>
+</div>
 </div>
 
 
@@ -547,8 +567,20 @@ async function doRegister() {
 function updateAuthUI() {
     const username = localStorage.getItem('username');
     const buttons = document.querySelector('.header-buttons');
-    if (username && buttons) {
-        buttons.innerHTML = `<span style="color:#00e5ff; font-size:14px;">👤 ${username}</span> <button class="login-button" onclick="logout()">Выйти</button>`;
+    const mobileAuth = document.getElementById('mobileAuthButtons');
+    const mobileUser = document.getElementById('mobileUserInfo');
+    const mobileUsername = document.getElementById('mobileUsername');
+
+
+    if (username) {
+        if (buttons) buttons.innerHTML = `<span onclick="window.location='profile.html'" style="color:#00e5ff; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:8px;"><span style="width:32px; height:32px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px;">👤</span>${username}</span>`;
+        if (mobileAuth) mobileAuth.style.display = 'none';
+        if (mobileUser) mobileUser.style.display = 'block';
+        if (mobileUsername) mobileUsername.textContent = username;
+    } else {
+        if (buttons) buttons.innerHTML = `<button class="login-button" onclick="openModal('login')">Войти</button><button class="register-button" onclick="openModal('register')">Регистрация</button>`;
+        if (mobileAuth) mobileAuth.style.display = 'block';
+        if (mobileUser) mobileUser.style.display = 'none';
     }
 }
 
