@@ -473,7 +473,7 @@ NEW GENERATION RUST SERVERS
 <p style="color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:24px;">С возвращением в Element Rust</p>
 <input id="loginEmail" type="text" placeholder="Email или никнейм" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px; outline:none;">
 <input id="loginPassword" type="password" placeholder="Пароль" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:20px; outline:none;">
-<button onclick="doLogin()" style="width:100%; padding:13px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Войти</button>
+<button id="loginBtn" onclick="doLogin()" style="width:100%; padding:13px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Войти</button>
 <p style="color:rgba(255,255,255,0.5); font-size:13px; text-align:center; margin-top:16px;">Нет аккаунта? <span onclick="switchForm('register')" style="color:#00e5ff; cursor:pointer;">Регистрация</span></p>
 <div id="loginError" style="color:#ff5555; font-size:13px; margin-top:12px; text-align:center;"></div>
 </div>
@@ -490,7 +490,7 @@ NEW GENERATION RUST SERVERS
 <input id="agreeTerms" type="checkbox" style="margin-top:3px; accent-color:#00e5ff;">
 <span style="color:rgba(255,255,255,0.6); font-size:12px; line-height:1.5;">Я принимаю <a href="terms.html" target="_blank" style="color:#00e5ff;">Пользовательское соглашение</a> и <a href="privacy.html" target="_blank" style="color:#00e5ff;">Политику конфиденциальности</a></span>
 </label>
-<button onclick="doRegister()" style="width:100%; padding:13px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Создать аккаунт</button>
+<button id="registerBtn" onclick="doRegister()" style="width:100%; padding:13px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Создать аккаунт</button>
 <p style="color:rgba(255,255,255,0.5); font-size:13px; text-align:center; margin-top:16px;">Уже есть аккаунт? <span onclick="switchForm('login')" style="color:#00e5ff; cursor:pointer;">Войти</span></p>
 <div id="registerError" style="color:#ff5555; font-size:13px; margin-top:12px; text-align:center;"></div>
 </div>
@@ -529,6 +529,9 @@ async function doLogin() {
         document.getElementById('loginError').textContent = 'Заполните все поля';
         return;
     }
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Подождите...';
     try {
         const res = await fetch(`${API}/login`, {
             method: 'POST',
@@ -541,7 +544,11 @@ async function doLogin() {
         localStorage.setItem('username', data.username);
         closeModal();
         updateAuthUI();
+        btn.disabled = false;
+        btn.textContent = 'Войти';
     } catch {
+        btn.disabled = false;
+        btn.textContent = 'Войти';
         document.getElementById('loginError').textContent = 'Ошибка соединения с сервером';
     }
 }
@@ -579,6 +586,9 @@ async function doRegister() {
         document.getElementById('registerError').textContent = 'Примите условия использования';
         return;
     }
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Создаём аккаунт...';
     try {
         const res = await fetch(`${API}/register`, {
             method: 'POST',
@@ -591,7 +601,11 @@ async function doRegister() {
         localStorage.setItem('username', data.username);
         closeModal();
         updateAuthUI();
+        btn.disabled = false;
+        btn.textContent = 'Создать аккаунт';
     } catch {
+        btn.disabled = false;
+        btn.textContent = 'Создать аккаунт';
         document.getElementById('registerError').textContent = 'Ошибка соединения с сервером';
     }
 }
