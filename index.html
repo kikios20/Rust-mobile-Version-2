@@ -129,23 +129,24 @@
 </div>
 
 
-<div class="burger" id="burger">
-    <span></span>
-    <span></span>
-    <span></span>
+<div style="display:flex; align-items:center; gap:12px;">
+<button id="headerLoginBtn" onclick="openModal('login')" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Войти</button>
+<div class="burger" id="burger"><span></span><span></span><span></span></div>
 </div>
 
 
 <div class="mobile-menu" id="mobileMenu">
+<button onclick="document.getElementById('mobileMenu').classList.remove('active')" style="position:absolute; top:20px; right:20px; background:none; border:none; color:rgba(255,255,255,0.6); font-size:24px; cursor:pointer;">✕</button>
 <div style="border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:20px; margin-bottom:20px;">
 <div id="mobileAuthButtons">
-<button onclick="openModal('login'); menu.classList.remove('active')" style="width:100%; padding:12px; background:transparent; border:1px solid rgba(255,255,255,0.15); border-radius:10px; color:#fff; font-size:15px; cursor:pointer; margin-bottom:10px;">Войти</button>
-<button onclick="openModal('register'); menu.classList.remove('active')" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Регистрация</button>
+<button onclick="openModal('login'); document.getElementById('mobileMenu').classList.remove('active')" style="width:100%; padding:12px; background:transparent; border:1px solid rgba(255,255,255,0.15); border-radius:10px; color:#fff; font-size:15px; cursor:pointer; margin-bottom:10px;">Войти</button>
+<p style="text-align:center; color:rgba(255,255,255,0.4); font-size:13px; margin-bottom:10px;">Нет аккаунта? <span onclick="openModal('register'); document.getElementById('mobileMenu').classList.remove('active')" style="color:#00e5ff; cursor:pointer;">Зарегистрируйтесь</span></p>
 </div>
 <div id="mobileUserInfo" style="display:none; text-align:center;">
 <div style="width:50px; height:50px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:22px;">👤</div>
 <div id="mobileUsername" style="color:#00e5ff; font-weight:700; font-size:16px; margin-bottom:4px;"></div>
-<button onclick="logout()" style="background:none; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:rgba(255,255,255,0.6); font-size:12px; padding:5px 12px; cursor:pointer; margin-top:6px;">Выйти</button>
+<p style="color:rgba(255,255,255,0.4); font-size:13px; margin-bottom:8px;">Не вы? <span onclick="logout()" style="color:#00e5ff; cursor:pointer;">Выйти</span></p>
+<button onclick="window.location='profile.html'; document.getElementById('mobileMenu').classList.remove('active')" style="width:100%; padding:10px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; font-size:14px; cursor:pointer;">Мой профиль</button>
 </div>
 </div>
 
@@ -570,15 +571,18 @@ function updateAuthUI() {
     const mobileAuth = document.getElementById('mobileAuthButtons');
     const mobileUser = document.getElementById('mobileUserInfo');
     const mobileUsername = document.getElementById('mobileUsername');
+    const headerLoginBtn = document.getElementById('headerLoginBtn');
 
 
     if (username) {
-        if (buttons) buttons.innerHTML = `<span onclick="window.location='profile.html'" style="color:#00e5ff; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:8px;"><span style="width:32px; height:32px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px;">👤</span>${username}</span>`;
+        if (buttons) buttons.innerHTML = `<span onclick="window.location='profile.html'" style="color:#00e5ff; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:8px;"><span style="width:32px; height:32px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; color:#000; font-weight:700;">${username[0].toUpperCase()}</span>${username}</span>`;
+        if (headerLoginBtn) headerLoginBtn.style.display = 'none';
         if (mobileAuth) mobileAuth.style.display = 'none';
         if (mobileUser) mobileUser.style.display = 'block';
         if (mobileUsername) mobileUsername.textContent = username;
     } else {
         if (buttons) buttons.innerHTML = `<button class="login-button" onclick="openModal('login')">Войти</button><button class="register-button" onclick="openModal('register')">Регистрация</button>`;
+        if (headerLoginBtn) headerLoginBtn.style.display = 'block';
         if (mobileAuth) mobileAuth.style.display = 'block';
         if (mobileUser) mobileUser.style.display = 'none';
     }
