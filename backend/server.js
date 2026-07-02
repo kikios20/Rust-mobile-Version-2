@@ -194,6 +194,48 @@ app.post('/login', rateLimit, async (req, res) => {
 });
 
 
+// Middleware для проверки токена
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Необходима авторизация' });
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ error: 'Недействительный токен' });
+  }
+}
+
+
+// Профиль пользователя
+app.get('/profile', authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, username, email, created_at FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Пользователь не найден' });
+    }
+    const user = result.rows[0];
+    res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      created_at: user.created_at,
+      balance: 0
+    });
+  } catch (err) {
+    console.error('Profile error:', err.message);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
