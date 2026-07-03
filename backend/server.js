@@ -168,6 +168,7 @@ app.post('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => 
 app.post('/admin/ban', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId, reason } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
+  if (userId === 1 || userId === '1') return res.status(403).json({ error: 'Нельзя заблокировать аккаунт администратора' });
   try {
     await pool.query('UPDATE users SET is_banned = true, ban_reason = $1 WHERE id = $2', [reason || 'Без причины', userId]);
     res.json({ success: true });
