@@ -1058,3 +1058,10 @@ footer li {
 
 html { scroll-behavior: smooth; }
 input, button { font-size: 16px; }
+
+
+/* Фикс кнопок на мобиле — фон не должен перекрывать интерактивные элементы */
+button, a, input, label {
+    position: relative;
+    z-index: 10;
+}
