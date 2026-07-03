@@ -4,6 +4,46 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+
+// Хранилище кодов верификации (в памяти, очищается при перезапуске)
+const verificationCodes = new Map();
+
+
+function generateCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+
+async function sendVerificationEmail(email, code) {
+  await transporter.sendMail({
+    from: `"Element Rust" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Подтверждение email — Element Rust',
+    html: `
+      <div style="background:#05070d; color:#fff; padding:40px; font-family:Inter,sans-serif; max-width:500px; margin:0 auto; border-radius:16px;">
+        <h1 style="color:#00e5ff; margin-bottom:8px;">Element Rust</h1>
+        <p style="color:rgba(255,255,255,0.6); margin-bottom:30px;">Подтверждение регистрации</p>
+        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:30px; text-align:center; margin-bottom:24px;">
+          <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:12px;">Ваш код подтверждения:</p>
+          <div style="font-size:36px; font-weight:800; letter-spacing:8px; color:#00e5ff;">${code}</div>
+          <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:12px;">Код действителен 10 минут</p>
+        </div>
+        <p style="color:rgba(255,255,255,0.4); font-size:12px;">Если вы не регистрировались на Element Rust — просто проигнорируйте это письмо.</p>
+      </div>
+    `
+  });
+}
 
 
 const app = express();
@@ -110,6 +150,48 @@ app.post('/register', rateLimit, async (req, res) => {
     console.error('Register error:', err.message);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
+});
+
+
+// Отправить код верификации
+app.post('/send-verification', rateLimit, async (req, res) => {
+  const { email } = req.body;
+  if (!email || !validateEmail(email)) {
+    return res.status(400).json({ error: 'Неверный email' });
+  }
+  try {
+    // Проверяем что email ещё не занят
+    const existing = await pool.query('SELECT id FROM users WHERE email = LOWER($1)', [email.trim()]);
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ error: 'Этот email уже зарегистрирован' });
+    }
+    const code = generateCode();
+    verificationCodes.set(email.toLowerCase(), {
+      code,
+      expires: Date.now() + 10 * 60 * 1000 // 10 минут
+    });
+    await sendVerificationEmail(email, code);
+    res.json({ success: true, message: 'Код отправлен на вашу почту' });
+  } catch (err) {
+    console.error('Send verification error:', err.message);
+    res.status(500).json({ error: 'Не удалось отправить письмо' });
+  }
+});
+
+
+// Проверить код верификации
+app.post('/verify-email', (req, res) => {
+  const { email, code } = req.body;
+  if (!email || !code) return res.status(400).json({ error: 'Укажите email и код' });
+  const stored = verificationCodes.get(email.toLowerCase());
+  if (!stored) return res.status(400).json({ error: 'Код не найден. Запросите новый.' });
+  if (Date.now() > stored.expires) {
+    verificationCodes.delete(email.toLowerCase());
+    return res.status(400).json({ error: 'Код истёк. Запросите новый.' });
+  }
+  if (stored.code !== code) return res.status(400).json({ error: 'Неверный код' });
+  verificationCodes.delete(email.toLowerCase());
+  res.json({ success: true, message: 'Email подтверждён' });
 });
 
 
