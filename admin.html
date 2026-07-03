@@ -4,228 +4,98 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Админ панель — Element Rust</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=3">
-<link rel="stylesheet" href="css/mobile.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/mobile.css?v=4">
 </head>
 <body>
-
-
-<div class="background">
-<div class="gradient-layer"></div>
-<div class="crystal crystal-1"></div>
-<div class="crystal crystal-2"></div>
-<div class="crystal crystal-3"></div>
-<div class="crystal crystal-4"></div>
-<div class="chemical-layer">
-<span>NaCl</span><span>H₂O</span><span>CO₂</span><span>CuSO₄</span><span>H₂SO₄</span><span>Fe₂O₃</span><span>CH₄</span><span>NH₃</span>
-</div>
-</div>
-
-
-<header>
-<div class="container">
-<div class="logo" onclick="window.location='index.html'" style="cursor:pointer;">
-<div class="logo-icon"><div class="logo-core"></div></div>
-<div class="logo-text"><h1>ELEMENT RUST</h1><p>Admin Panel</p></div>
-</div>
-<div style="display:flex; gap:10px;">
-<a href="profile.html" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:13px; cursor:pointer; text-decoration:none;">Профиль</a>
-<button onclick="logout()" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,80,80,0.4); border-radius:8px; color:#ff5555; font-size:13px; cursor:pointer;">Выйти</button>
-</div>
-</div>
-</header>
-
-
+<div class="background"><div class="gradient-layer"></div><div class="crystal crystal-1"></div><div class="crystal crystal-2"></div><div class="chemical-layer"><span>NaCl</span><span>H₂O</span><span>CO₂</span><span>CuSO₄</span></div></div>
+<header><div class="container"><div class="logo" onclick="window.location='index.html'" style="cursor:pointer;"><div class="logo-icon"><div class="logo-core"></div></div><div class="logo-text"><h1>ELEMENT RUST</h1><p>Admin Panel</p></div></div><div style="display:flex; gap:10px;"><a href="profile.html" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:13px; text-decoration:none;">Профиль</a><button onclick="logout()" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,80,80,0.4); border-radius:8px; color:#ff5555; font-size:13px; cursor:pointer;">Выйти</button></div></div></header>
 <section style="padding-top:120px; padding-bottom:60px;">
 <div class="container">
-
-
-<div id="noAccess" style="display:none; text-align:center; padding:60px 0;">
-<div style="font-size:60px; margin-bottom:20px;">🚫</div>
-<h2 style="color:#fff;">Нет доступа</h2>
-<p style="color:rgba(255,255,255,0.5); margin-bottom:30px;">Эта страница только для администратора</p>
-<a href="index.html" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:12px; color:#000; font-weight:700; text-decoration:none;">На главную</a>
-</div>
-
-
-<div id="adminContent" style="display:none;">
+<div id="noAccess" style="display:none; text-align:center; padding:60px 0;"><div style="font-size:60px; margin-bottom:20px;">X</div><h2 style="color:#fff;">Нет доступа</h2><p style="color:rgba(255,255,255,0.5); margin-bottom:30px;">Эта страница только для администратора</p><a href="index.html" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:12px; color:#000; font-weight:700; text-decoration:none;">На главную</a></div>
+<div id="adminContent" style="display:none; max-width:800px; margin:0 auto;">
 <h2 style="color:#fff; margin-bottom:8px;">Админ панель</h2>
-<p style="color:rgba(255,255,255,0.4); margin-bottom:40px;">Управление пользователями Element Rust</p>
-
-
-<!-- Статистика -->
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:40px;">
-<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; text-align:center;">
-<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ИГРОКОВ</p>
-<p id="totalUsers" style="color:#00e5ff; font-size:28px; font-weight:700;">—</p>
+<p style="color:rgba(255,255,255,0.4); margin-bottom:30px;">Управление пользователями Element Rust</p>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:30px;">
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; text-align:center;"><p style="color:rgba(255,255,255,0.4); font-size:10px; letter-spacing:2px; margin-bottom:6px;">ВСЕГО</p><p id="totalUsers" style="color:#00e5ff; font-size:26px; font-weight:700;">-</p></div>
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; text-align:center;"><p style="color:rgba(255,255,255,0.4); font-size:10px; letter-spacing:2px; margin-bottom:6px;">ЗАБАНЕНО</p><p id="totalBanned" style="color:#ff5555; font-size:26px; font-weight:700;">-</p></div>
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; text-align:center;"><p style="color:rgba(255,255,255,0.4); font-size:10px; letter-spacing:2px; margin-bottom:6px;">АКТИВНЫХ</p><p id="totalActive" style="color:#00ff88; font-size:26px; font-weight:700;">-</p></div>
 </div>
-<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; text-align:center;">
-<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ЗАБАНЕНО</p>
-<p id="totalBanned" style="color:#ff5555; font-size:28px; font-weight:700;">—</p>
+<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;">
+<button onclick="showTab('users')" id="tab-users" style="padding:8px 16px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:8px; color:#000; font-weight:700; font-size:13px; cursor:pointer;">Пользователи</button>
+<button onclick="showTab('balance')" id="tab-balance" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Баланс</button>
+<button onclick="showTab('ban')" id="tab-ban" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Баны</button>
+<button onclick="showTab('edit')" id="tab-edit" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Редактировать</button>
+<button onclick="showTab('banlist')" id="tab-banlist" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Бан-лист</button>
 </div>
-<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; text-align:center;">
-<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">АКТИВНЫХ</p>
-<p id="totalActive" style="color:#00ff88; font-size:28px; font-weight:700;">—</p>
-</div>
-</div>
-
-
-<!-- Управление балансом -->
-<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:24px;">
-<h3 style="color:#fff; margin-bottom:20px;">Управление балансом</h3>
-<div style="display:flex; gap:10px; flex-wrap:wrap;">
-<input id="balanceUserId" type="number" placeholder="ID пользователя" style="flex:1; min-width:120px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
-<input id="balanceAmount" type="number" placeholder="Сумма (+ или -)" style="flex:1; min-width:120px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
-<input id="balanceComment" type="text" placeholder="Комментарий" style="flex:2; min-width:160px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
-<button onclick="changeBalance()" style="padding:10px 20px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Применить</button>
-</div>
-<div id="balanceResult" style="color:#00ff88; font-size:13px; margin-top:10px;"></div>
-</div>
-
-
-<!-- Бан -->
-<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:24px;">
-<h3 style="color:#fff; margin-bottom:20px;">Заблокировать игрока</h3>
-<div style="display:flex; gap:10px; flex-wrap:wrap;">
-<input id="banUserId" type="number" placeholder="ID пользователя" style="flex:1; min-width:120px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
-<input id="banReason" type="text" placeholder="Причина бана" style="flex:2; min-width:160px; padding:10px 14px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; outline:none;">
-<button onclick="banUser()" style="padding:10px 20px; background:linear-gradient(135deg,#ff5555,#ff0000); border:none; border-radius:10px; color:#fff; font-weight:700; cursor:pointer;">Забанить</button>
-</div>
-<div id="banResult" style="color:#ff5555; font-size:13px; margin-top:10px;"></div>
-</div>
-
-
-<!-- Список пользователей -->
-<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;">
-<h3 style="color:#fff; margin-bottom:20px;">Все пользователи</h3>
-<div id="usersList"></div>
-</div>
-
-
-</div>
-</div>
-</div>
-</section>
-
-
+<div id="section-users"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px;"><input id="searchInput" type="text" placeholder="Поиск..." oninput="filterUsers()" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:16px;"><div id="usersList"></div><div id="pagination"></div></div></div>
+<div id="section-balance" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3 style="color:#fff; margin-bottom:20px;">Управление балансом</h3><input id="balanceUserId" type="number" placeholder="ID пользователя" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px;"><input id="balanceAmount" type="number" placeholder="Сумма" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px;"><button onclick="changeBalance()" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Применить</button><div id="balanceResult" style="margin-top:12px; text-align:center;"></div></div></div>
+<div id="section-ban" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:16px;"><h3>Заблокировать</h3><input id="banUserId" type="number" placeholder="ID" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="banReason" type="text" placeholder="Причина" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><button onclick="banUser()" style="width:100%; padding:12px; background:#ff5555; border:none; border-radius:10px; color:#fff; font-weight:700; cursor:pointer;">Забанить</button><div id="banResult" style="margin-top:12px;"></div></div><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3>Разбанить</h3><input id="unbanUserId" type="number" placeholder="ID" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><button onclick="unbanUser()" style="width:100%; padding:12px; background:#00ff88; border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Разбанить</button><div id="unbanResult" style="margin-top:12px;"></div></div></div>
+<div id="section-edit" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3>Редактировать</h3><input id="editUserId" type="number" placeholder="ID" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="editUsername" type="text" placeholder="Новый никнейм" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="editEmail" type="email" placeholder="Новый email" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="editPassword" type="password" placeholder="Новый пароль" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><button onclick="editUser()" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Сохранить</button><div id="editResult" style="margin-top:12px;"></div></div></div>
+<div id="section-banlist" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3>Бан-лист</h3><div id="banList"></div></div></div>
+</div></div></div></section>
 <script>
-const API = 'https://rust-mobile-version-2.onrender.com';
-
-
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    window.location.href = 'index.html';
-}
-
-
-async function loadAdmin() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        document.getElementById('noAccess').style.display = 'block';
-        return;
+var API = 'https://rust-mobile-version-2.onrender.com';
+var allUsers = [];
+var currentPage = 1;
+var perPage = 100;
+function logout() { localStorage.removeItem('token'); localStorage.removeItem('username'); window.location.href = 'index.html'; }
+function getToken() { return localStorage.getItem('token'); }
+function showTab(tab) {
+    var tabs = ['users','balance','ban','edit','banlist'];
+    for (var i = 0; i < tabs.length; i++) {
+        var t = tabs[i];
+        var sec = document.getElementById('section-' + t);
+        if (sec) sec.style.display = t === tab ? 'block' : 'none';
+        var btn = document.getElementById('tab-' + t);
+        if (btn) { btn.style.background = t === tab ? 'linear-gradient(135deg,#00e5ff,#8a5cff)' : 'rgba(255,255,255,0.08)'; btn.style.color = t === tab ? '#000' : '#fff'; btn.style.fontWeight = t === tab ? '700' : '400'; }
     }
-
-
-    try {
-        const res = await fetch(`${API}/admin/users`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-
-        if (!res.ok) {
-            document.getElementById('noAccess').style.display = 'block';
-            return;
-        }
-
-
-        const users = await res.json();
-        document.getElementById('adminContent').style.display = 'block';
-
-
-        const banned = users.filter(u => u.is_banned).length;
-        document.getElementById('totalUsers').textContent = users.length;
-        document.getElementById('totalBanned').textContent = banned;
-        document.getElementById('totalActive').textContent = users.length - banned;
-
-
-        const list = document.getElementById('usersList');
-        list.innerHTML = users.map(u => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:8px;">
-                <div>
-                    <span style="color:#00e5ff; font-family:monospace; font-size:12px;">#${u.id}</span>
-                    <span style="color:#fff; margin-left:10px; font-weight:600;">${u.username}</span>
-                    ${u.is_banned ? '<span style="background:rgba(255,80,80,0.2); color:#ff5555; font-size:11px; padding:2px 8px; border-radius:20px; margin-left:8px;">ЗАБАНЕН</span>' : ''}
-                </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <span style="color:rgba(255,255,255,0.4); font-size:12px;">${u.email}</span>
-                    <span style="color:#00e5ff; font-size:12px;">💰 ${u.balance || 0}</span>
-                </div>
-            </div>
-        `).join('');
-
-
-    } catch (err) {
-        document.getElementById('noAccess').style.display = 'block';
-    }
+    if (tab === 'banlist') renderBanList();
 }
-
-
-async function changeBalance() {
-    const token = localStorage.getItem('token');
-    const userId = document.getElementById('balanceUserId').value;
-    const amount = document.getElementById('balanceAmount').value;
-    const comment = document.getElementById('balanceComment').value;
-
-
-    const res = await fetch(`${API}/admin/balance`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ userId: parseInt(userId), amount: parseInt(amount), comment })
-    });
-    const data = await res.json();
-    const el = document.getElementById('balanceResult');
-    if (res.ok) {
-        el.style.color = '#00ff88';
-        el.textContent = `✓ Баланс обновлён. ${data.user.username}: ${data.user.balance} ₴`;
-        loadAdmin();
-    } else {
-        el.style.color = '#ff5555';
-        el.textContent = `✗ ${data.error}`;
+function renderUsers(users) {
+    var start = (currentPage - 1) * perPage;
+    var page = users.slice(start, start + perPage);
+    var list = document.getElementById('usersList');
+    if (page.length === 0) { list.innerHTML = '<p style="color:#666; text-align:center;">Ничего не найдено</p>'; return; }
+    var html = '';
+    for (var i = 0; i < page.length; i++) {
+        var u = page[i];
+        html += '<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><div><span style="color:#00e5ff;">#' + u.id + '</span> <span style="color:#fff;">' + u.username + '</span>' + (u.is_banned ? ' <span style="background:#ff5555; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px;">БАН</span>' : '') + '</div><div><span style="color:#888; font-size:12px;">' + u.email + '</span> <span style="color:#00e5ff;">' + (u.balance || 0) + '</span></div></div>';
     }
-}
-
-
-async function banUser() {
-    const token = localStorage.getItem('token');
-    const userId = document.getElementById('banUserId').value;
-    const reason = document.getElementById('banReason').value;
-
-
-    const res = await fetch(`${API}/admin/ban`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ userId: parseInt(userId), reason })
-    });
-    const data = await res.json();
-    const el = document.getElementById('banResult');
-    if (res.ok) {
-        el.style.color = '#00ff88';
-        el.textContent = '✓ Пользователь заблокирован';
-        loadAdmin();
-    } else {
-        el.style.color = '#ff5555';
-        el.textContent = `✗ ${data.error}`;
+    list.innerHTML = html;
+    var pag = document.getElementById('pagination');
+    var totalPages = Math.ceil(users.length / perPage);
+    if (totalPages <= 1) { pag.innerHTML = ''; return; }
+    var ph = '';
+    for (var j = 1; j <= totalPages; j++) {
+        ph += '<button onclick="goToPage(' + j + ')" style="padding:6px 12px; background:' + (currentPage === j ? '#00e5ff' : '#333') + '; border:none; border-radius:6px; color:' + (currentPage === j ? '#000' : '#fff') + '; cursor:pointer; margin:0 2px;">' + j + '</button>';
     }
+    pag.innerHTML = ph;
 }
-
-
-document.addEventListener('DOMContentLoaded', loadAdmin);
+function goToPage(p) { currentPage = p; renderUsers(filteredUsers()); }
+function filteredUsers() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    if (!q) return allUsers;
+    return allUsers.filter(function(u) { return u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || String(u.id).includes(q); });
+}
+function filterUsers() { currentPage = 1; renderUsers(filteredUsers()); }
+function renderBanList() {
+    var banned = allUsers.filter(function(u) { return u.is_banned; });
+    var el = document.getElementById('banList');
+    if (banned.length === 0) { el.innerHTML = '<p style="color:#666;">Забаненных нет</p>'; return; }
+    var html = '';
+    for (var i = 0; i < banned.length; i++) {
+        var u = banned[i];
+        html += '<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><div><span style="color:#00e5ff;">#' + u.id + '</span> <span style="color:#fff;">' + u.username + '</span><p style="color:#ff5555; font-size:11px; margin:2px 0 0 0;">' + (u.ban_reason || 'без причины') + '</p></div><button onclick="quickUnban(' + u.id + ')" style="padding:6px 12px; background:#00ff88; border:none; border-radius:6px; color:#000; font-weight:700; cursor:pointer;">Разбанить</button></div>';
+    }
+    el.innerHTML = html;
+}
+async function quickUnban(id) { var r = await fetch(API + '/admin/unban', {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({userId:id})}); if (r.ok) { await loadAdmin(); renderBanList(); } }
+async function changeBalance() { var uid = document.getElementById('balanceUserId').value; var amt = document.getElementById('balanceAmount').value; var el = document.getElementById('balanceResult'); var r = await fetch(API + '/admin/balance', {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({userId:parseInt(uid),amount:parseInt(amt)})}); var d = await r.json(); if (r.ok) { el.style.color='#00ff88'; el.textContent = 'OK: ' + d.user.username + ' = ' + d.user.balance; loadAdmin(); } else { el.style.color='#ff5555'; el.textContent = 'Error: ' + d.error; } }
+async function banUser() { var uid = document.getElementById('banUserId').value; var reason = document.getElementById('banReason').value; var el = document.getElementById('banResult'); var r = await fetch(API + '/admin/ban', {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({userId:parseInt(uid),reason:reason})}); var d = await r.json(); if (r.ok) { el.style.color='#00ff88'; el.textContent = 'OK'; loadAdmin(); } else { el.style.color='#ff5555'; el.textContent = 'Error: ' + d.error; } }
+async function unbanUser() { var uid = document.getElementById('unbanUserId').value; var el = document.getElementById('unbanResult'); var r = await fetch(API + '/admin/unban', {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({userId:parseInt(uid)})}); var d = await r.json(); if (r.ok) { el.style.color='#00ff88'; el.textContent = 'OK'; loadAdmin(); } else { el.style.color='#ff5555'; el.textContent = 'Error: ' + d.error; } }
+async function editUser() { var uid = document.getElementById('editUserId').value; var uname = document.getElementById('editUsername').value; var email = document.getElementById('editEmail').value; var pass = document.getElementById('editPassword').value; var el = document.getElementById('editResult'); var body = {userId:parseInt(uid)}; if (uname) body.username = uname; if (email) body.email = email; if (pass) body.password = pass; var r = await fetch(API + '/admin/edit-user', {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify(body)}); var d = await r.json(); if (r.ok) { el.style.color='#00ff88'; el.textContent = 'OK'; loadAdmin(); } else { el.style.color='#ff5555'; el.textContent = 'Error: ' + d.error; } }
+async function loadAdmin() { var r = await fetch(API + '/admin/users', {headers:{'Authorization':'Bearer '+getToken()}}); if (!r.ok) { document.getElementById('noAccess').style.display='block'; return; } allUsers = await r.json(); document.getElementById('adminContent').style.display='block'; var banned = allUsers.filter(function(u){return u.is_banned;}).length; document.getElementById('totalUsers').textContent = allUsers.length; document.getElementById('totalBanned').textContent = banned; document.getElementById('totalActive').textContent = allUsers.length - banned; renderUsers(allUsers); }
+document.addEventListener('DOMContentLoaded', function() { if (!localStorage.getItem('token')) { document.getElementById('noAccess').style.display='block'; return; } loadAdmin(); });
 </script>
-
-
-</body>
-</html>
+</body></html>
