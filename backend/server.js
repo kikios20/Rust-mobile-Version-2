@@ -9,7 +9,6 @@ const jwt = require('jsonwebtoken');
 const app = express();
 
 
-// Разрешаем только наш сайт
 app.use(cors({
   origin: ['https://kikios20.github.io', 'http://localhost:3000'],
   methods: ['GET', 'POST'],
@@ -17,138 +16,96 @@ app.use(cors({
 }));
 
 
-app.use(express.json({ limit: '10kb' })); // защита от огромных запросов
+app.use(express.json({ limit: '10kb' }));
 
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-  max: 10 // максимум соединений
+  max: 10
 });
 
 
 const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  console.error('JWT_SECRET не задан!');
-  process.exit(1);
-}
+if (!JWT_SECRET) { console.error('JWT_SECRET не задан!'); process.exit(1); }
 
 
-// Минимальная таблица — только то что реально нужно
-pool.query(`
-  CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(30) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    agreed_to_terms BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMP DEFAULT NOW()
-  )
-`).then(() => {
+pool.query(`CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(30) UNIQUE NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  agreed_to_terms BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP DEFAULT NOW()
+)`).then(async () => {
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS balance INTEGER DEFAULT 0`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT false`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason VARCHAR(255)`);
   console.log('Database ready');
-  return pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS balance INTEGER DEFAULT 0`);
-}).then(() => {
-  return pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT false`);
-}).then(() => {
-  return pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason VARCHAR(255)`);
 }).catch(err => console.error('DB init error:', err));
 
 
-// Простая защита от брутфорса (не более 10 запросов в минуту с одного IP)
 const loginAttempts = new Map();
 function rateLimit(req, res, next) {
   const ip = req.ip;
   const now = Date.now();
-  const attempts = loginAttempts.get(ip) || [];
-  const recent = attempts.filter(t => now - t < 60000);
-  if (recent.length >= 10) {
-    return res.status(429).json({ error: 'Слишком много попыток. Подождите минуту.' });
-  }
-  recent.push(now);
-  loginAttempts.set(ip, recent);
+  const attempts = (loginAttempts.get(ip) || []).filter(t => now - t < 60000);
+  if (attempts.length >= 10) return res.status(429).json({ error: 'Слишком много попыток. Подождите минуту.' });
+  attempts.push(now);
+  loginAttempts.set(ip, attempts);
   next();
 }
 
 
-// Валидация входных данных
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+function validateUsername(username) { return /^[a-zA-Z0-9_]{3,30}$/.test(username); }
+
+
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'Необходима авторизация' });
+  try {
+    req.user = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+    next();
+  } catch { return res.status(401).json({ error: 'Недействительный токен' }); }
 }
 
 
-function validateUsername(username) {
-  return /^[a-zA-Z0-9_]{3,30}$/.test(username);
+function adminMiddleware(req, res, next) {
+  if (req.user.id !== 1) return res.status(403).json({ error: 'Нет доступа' });
+  next();
 }
 
 
-app.get('/', (req, res) => {
-  res.json({ status: 'Element Rust API is running' });
-});
+app.get('/', (req, res) => res.json({ status: 'Element Rust API is running' }));
 
 
 app.get('/health', async (req, res) => {
-  try {
-    await pool.query('SELECT 1');
-    res.json({ status: 'ok', database: 'connected' });
-  } catch (err) {
-    res.status(500).json({ status: 'error', database: 'disconnected' });
-  }
+  try { await pool.query('SELECT 1'); res.json({ status: 'ok', database: 'connected' }); }
+  catch (err) { res.status(500).json({ status: 'error', database: 'disconnected' }); }
 });
 
 
-// Регистрация
 app.post('/register', rateLimit, async (req, res) => {
   const { username, email, password, agreedToTerms } = req.body;
-
-
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: 'Заполните все поля' });
-  }
-
-
-  if (!validateUsername(username)) {
-    return res.status(400).json({ error: 'Никнейм: 3-30 символов, только буквы, цифры и _' });
-  }
-
-
-  if (!validateEmail(email)) {
-    return res.status(400).json({ error: 'Неверный формат email' });
-  }
-
-
-  if (password.length < 6 || password.length > 72) {
-    return res.status(400).json({ error: 'Пароль: от 6 до 72 символов' });
-  }
-
-
-  if (!agreedToTerms) {
-    return res.status(400).json({ error: 'Необходимо принять условия использования' });
-  }
-
-
+  if (!username || !email || !password) return res.status(400).json({ error: 'Заполните все поля' });
+  if (!validateUsername(username)) return res.status(400).json({ error: 'Никнейм: 3-30 символов, только буквы, цифры и _' });
+  if (!validateEmail(email)) return res.status(400).json({ error: 'Неверный формат email' });
+  if (password.length < 6 || password.length > 72) return res.status(400).json({ error: 'Пароль: от 6 до 72 символов' });
+  if (!agreedToTerms) return res.status(400).json({ error: 'Необходимо принять условия использования' });
   try {
-    const password_hash = await bcrypt.hash(password, 12); // 12 раундов — хорошая защита
+    const password_hash = await bcrypt.hash(password, 12);
     const result = await pool.query(
       'INSERT INTO users (username, email, password_hash, agreed_to_terms) VALUES ($1, $2, $3, $4) RETURNING id, username',
       [username.trim(), email.toLowerCase().trim(), password_hash, true]
     );
     const user = result.rows[0];
-    // В токене только id и username — минимум данных
-    const token = jwt.sign(
-      { id: user.id, username: user.username },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-    // Не возвращаем email и другие лишние данные
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, username: user.username });
   } catch (err) {
     if (err.code === '23505') {
-      if (err.detail.includes('username')) {
-        return res.status(400).json({ error: 'Это имя пользователя уже занято' });
-      }
-      if (err.detail.includes('email')) {
-        return res.status(400).json({ error: 'Этот email уже зарегистрирован' });
-      }
+      if (err.detail.includes('username')) return res.status(400).json({ error: 'Это имя пользователя уже занято' });
+      if (err.detail.includes('email')) return res.status(400).json({ error: 'Этот email уже зарегистрирован' });
     }
     console.error('Register error:', err.message);
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -156,42 +113,20 @@ app.post('/register', rateLimit, async (req, res) => {
 });
 
 
-// Вход
 app.post('/login', rateLimit, async (req, res) => {
   const { login, password } = req.body;
-  if (!login || !password) {
-    return res.status(400).json({ error: 'Заполните все поля' });
-  }
-  const isEmail = validateEmail(login);
-  const email = login;
-
+  if (!login || !password) return res.status(400).json({ error: 'Заполните все поля' });
   try {
     const result = await pool.query(
-      'SELECT id, username, password_hash FROM users WHERE email = LOWER($1) OR LOWER(username) = LOWER($1)',
+      'SELECT id, username, password_hash, is_banned, ban_reason FROM users WHERE email = LOWER($1) OR LOWER(username) = LOWER($1)',
       [login.trim()]
     );
-
-
-    // Одинаковое сообщение об ошибке для безопасности
-    // (чтобы нельзя было угадать, существует ли email)
-    if (result.rows.length === 0) {
-      await bcrypt.hash('dummy', 12); // имитируем задержку
-      return res.status(400).json({ error: 'Неверный логин или пароль' });
-    }
-
-
+    if (result.rows.length === 0) { await bcrypt.hash('dummy', 12); return res.status(400).json({ error: 'Неверный логин или пароль' }); }
     const user = result.rows[0];
+    if (user.is_banned) return res.status(403).json({ error: `Аккаунт заблокирован. Причина: ${user.ban_reason || 'не указана'}` });
     const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) {
-      return res.status(400).json({ error: 'Неверный логин или пароль' });
-    }
-
-
-    const token = jwt.sign(
-      { id: user.id, username: user.username },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    if (!valid) return res.status(400).json({ error: 'Неверный логин или пароль' });
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, username: user.username });
   } catch (err) {
     console.error('Login error:', err.message);
@@ -200,121 +135,56 @@ app.post('/login', rateLimit, async (req, res) => {
 });
 
 
-// Middleware для проверки токена
-function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Необходима авторизация' });
-  }
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch {
-    return res.status(401).json({ error: 'Недействительный токен' });
-  }
-}
-
-
-// Профиль пользователя
 app.get('/profile', authMiddleware, async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT id, username, email, created_at, balance FROM users WHERE id = $1',
-      [req.user.id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-    const user = result.rows[0];
-    res.json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      created_at: user.created_at,
-      balance: user.balance || 0
-    });
+    const result = await pool.query('SELECT id, username, email, created_at, balance FROM users WHERE id = $1', [req.user.id]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
+    res.json(result.rows[0]);
   } catch (err) {
-    console.error('Profile error:', err.message);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
 
 
-// Проверка прав администратора
-function adminMiddleware(req, res, next) {
-  if (req.user.id !== 1) {
-    return res.status(403).json({ error: 'Нет доступа' });
-  }
-  next();
-}
-
-
-// Список всех пользователей (только для админа)
 app.get('/admin/users', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT id, username, email, created_at, balance FROM users ORDER BY id ASC'
-    );
+    const result = await pool.query('SELECT id, username, email, created_at, balance, is_banned, ban_reason FROM users ORDER BY id ASC');
     res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Ошибка сервера' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
 
-// Изменить баланс пользователя (только для админа)
 app.post('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId, amount, comment } = req.body;
-  if (!userId || amount === undefined) {
-    return res.status(400).json({ error: 'Укажите userId и amount' });
-  }
+  if (!userId || amount === undefined) return res.status(400).json({ error: 'Укажите userId и amount' });
   try {
-    const result = await pool.query(
-      'UPDATE users SET balance = balance + $1 WHERE id = $2 RETURNING id, username, balance',
-      [amount, userId]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Пользователь не найден' });
-    }
+    const result = await pool.query('UPDATE users SET balance = balance + $1 WHERE id = $2 RETURNING id, username, balance', [amount, userId]);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
     res.json({ success: true, user: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: 'Ошибка сервера' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
 
-// Забанить пользователя (только для админа)
 app.post('/admin/ban', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId, reason } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
   try {
-    await pool.query(
-      'UPDATE users SET is_banned = true, ban_reason = $1 WHERE id = $2',
-      [reason || 'Без причины', userId]
-    );
+    await pool.query('UPDATE users SET is_banned = true, ban_reason = $1 WHERE id = $2', [reason || 'Без причины', userId]);
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Ошибка сервера' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
 
-// Разбан (только для админа)
 app.post('/admin/unban', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
   try {
-    await pool.query('UPDATE users SET is_banned = false, ban_reason = NULL WHERE id = $1', [userId]);
+    await pool.query('UPDATE users SET is_banned = false, ban_reason = null WHERE id = $1', [userId]);
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Ошибка сервера' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
 
-// Редактирование пользователя (только для админа)
 app.post('/admin/edit-user', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId, username, email, password } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
@@ -335,6 +205,4 @@ app.post('/admin/edit-user', authMiddleware, adminMiddleware, async (req, res) =
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
