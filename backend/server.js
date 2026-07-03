@@ -301,6 +301,39 @@ app.post('/admin/ban', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 
+// Разбан
+app.post('/admin/unban', authMiddleware, adminMiddleware, async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: 'Укажите userId' });
+  try {
+    await pool.query('UPDATE users SET is_banned = false, ban_reason = null WHERE id = $1', [userId]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
+// Редактирование пользователя
+app.post('/admin/edit-user', authMiddleware, adminMiddleware, async (req, res) => {
+  const { userId, username, email, password } = req.body;
+  if (!userId) return res.status(400).json({ error: 'Укажите userId' });
+  try {
+    if (username) await pool.query('UPDATE users SET username = $1 WHERE id = $2', [username, userId]);
+    if (email) await pool.query('UPDATE users SET email = LOWER($1) WHERE id = $2', [email, userId]);
+    if (password) {
+      if (password.length < 6) return res.status(400).json({ error: 'Пароль минимум 6 символов' });
+      const hash = await bcrypt.hash(password, 12);
+      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, userId]);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    if (err.code === '23505') return res.status(400).json({ error: 'Никнейм или email уже занят' });
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
