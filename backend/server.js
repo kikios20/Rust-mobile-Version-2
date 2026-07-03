@@ -285,7 +285,7 @@ app.post('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => 
 });
 
 
-// Забанить/разбанить пользователя (только для админа)
+// Забанить пользователя (только для админа)
 app.post('/admin/ban', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId, reason } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
@@ -301,12 +301,12 @@ app.post('/admin/ban', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 
-// Разбан
+// Разбан (только для админа)
 app.post('/admin/unban', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
   try {
-    await pool.query('UPDATE users SET is_banned = false, ban_reason = null WHERE id = $1', [userId]);
+    await pool.query('UPDATE users SET is_banned = false, ban_reason = NULL WHERE id = $1', [userId]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Ошибка сервера' });
@@ -314,7 +314,7 @@ app.post('/admin/unban', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 
-// Редактирование пользователя
+// Редактирование пользователя (только для админа)
 app.post('/admin/edit-user', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId, username, email, password } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
