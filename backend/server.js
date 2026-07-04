@@ -261,11 +261,21 @@ app.post('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => 
 app.post('/admin/ban', authMiddleware, adminMiddleware, async (req, res) => {
   const { userId, reason } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
-  if (userId === 1 || userId === '1') return res.status(403).json({ error: 'Нельзя заблокировать аккаунт администратора' });
+  if (parseInt(userId) === 1) return res.status(403).json({ error: 'Нельзя заблокировать администратора' });
   try {
-    await pool.query('UPDATE users SET is_banned = true, ban_reason = $1 WHERE id = $2', [reason || 'Без причины', userId]);
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
+    const result = await pool.query(
+      'UPDATE users SET is_banned = true, ban_reason = $1 WHERE id = $2 RETURNING id, username, is_banned',
+      [reason || 'Без причины', parseInt(userId)]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: `Пользователь с ID ${userId} не найден` });
+    }
+    console.log('Banned user:', result.rows[0]);
+    res.json({ success: true, user: result.rows[0] });
+  } catch (err) {
+    console.error('Ban error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
@@ -283,36 +293,30 @@ app.post('/admin/edit-user', authMiddleware, adminMiddleware, async (req, res) =
   const { userId, username, email, password } = req.body;
   if (!userId) return res.status(400).json({ error: 'Укажите userId' });
   try {
-    if (username) await pool.query('UPDATE users SET username = $1 WHERE id = $2', [username, userId]);
-    if (email) await pool.query('UPDATE users SET email = LOWER($1) WHERE id = $2', [email, userId]);
-    if (password) {
-      if (password.length < 6) return res.status(400).json({ error: 'Пароль минимум 6 символов' });
-      const hash = await bcrypt.hash(password, 12);
-      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, userId]);
+    let updated = false;
+    if (username && username.trim()) {
+      await pool.query('UPDATE users SET username = $1 WHERE id = $2', [username.trim(), parseInt(userId)]);
+      updated = true;
     }
-    res.json({ success: true });
+    if (email && email.trim()) {
+      await pool.query('UPDATE users SET email = LOWER($1) WHERE id = $2', [email.trim(), parseInt(userId)]);
+      updated = true;
+    }
+    if (password && password.length >= 6) {
+      const hash = await bcrypt.hash(password, 12);
+      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, parseInt(userId)]);
+      updated = true;
+    }
+    if (!updated) return res.status(400).json({ error: 'Нечего обновлять — заполните хотя бы одно поле' });
+    const result = await pool.query('SELECT id, username, email FROM users WHERE id = $1', [parseInt(userId)]);
+    res.json({ success: true, user: result.rows[0] });
   } catch (err) {
     if (err.code === '23505') return res.status(400).json({ error: 'Никнейм или email уже занят' });
-    res.status(500).json({ error: 'Ошибка сервера' });
+    console.error('Edit user error:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-// Временный эндпоинт для проверки структуры таблицы
-app.get('/db-structure', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT column_name, data_type 
-      FROM information_schema.columns 
-      WHERE table_name = 'users' 
-      ORDER BY ordinal_position
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
