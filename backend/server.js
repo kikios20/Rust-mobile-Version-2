@@ -26,23 +26,29 @@ function generateCode() {
 
 
 async function sendVerificationEmail(email, code) {
-  await transporter.sendMail({
-    from: `"Element Rust" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Подтверждение email — Element Rust',
-    html: `
-      <div style="background:#05070d; color:#fff; padding:40px; font-family:Inter,sans-serif; max-width:500px; margin:0 auto; border-radius:16px;">
-        <h1 style="color:#00e5ff; margin-bottom:8px;">Element Rust</h1>
-        <p style="color:rgba(255,255,255,0.6); margin-bottom:30px;">Подтверждение регистрации</p>
-        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:30px; text-align:center; margin-bottom:24px;">
-          <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:12px;">Ваш код подтверждения:</p>
-          <div style="font-size:36px; font-weight:800; letter-spacing:8px; color:#00e5ff;">${code}</div>
-          <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:12px;">Код действителен 10 минут</p>
+  try {
+    await transporter.sendMail({
+      from: `"Element Rust" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Подтверждение email — Element Rust',
+      html: `
+        <div style="background:#05070d; color:#fff; padding:40px; font-family:Inter,sans-serif; max-width:500px; margin:0 auto; border-radius:16px;">
+          <h1 style="color:#00e5ff; margin-bottom:8px;">Element Rust</h1>
+          <p style="color:rgba(255,255,255,0.6); margin-bottom:30px;">Подтверждение регистрации</p>
+          <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:30px; text-align:center; margin-bottom:24px;">
+            <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:12px;">Ваш код подтверждения:</p>
+            <div style="font-size:36px; font-weight:800; letter-spacing:8px; color:#00e5ff;">${code}</div>
+            <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:12px;">Код действителен 10 минут</p>
+          </div>
+          <p style="color:rgba(255,255,255,0.4); font-size:12px;">Если вы не регистрировались на Element Rust — просто проигнорируйте это письмо.</p>
         </div>
-        <p style="color:rgba(255,255,255,0.4); font-size:12px;">Если вы не регистрировались на Element Rust — просто проигнорируйте это письмо.</p>
-      </div>
-    `
-  });
+      `
+    });
+    console.log(`Verification email sent to ${email}`);
+  } catch (err) {
+    console.error('Email send error:', err.message);
+    throw err;
+  }
 }
 
 
@@ -68,6 +74,10 @@ const pool = new Pool({
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) { console.error('JWT_SECRET не задан!'); process.exit(1); }
+console.log('Email config:', {
+  user: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+  pass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET'
+});
 
 
 pool.query(`CREATE TABLE IF NOT EXISTS users (
