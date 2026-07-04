@@ -28,6 +28,7 @@
 <button onclick="showTab('edit')" id="tab-edit" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Редактировать</button>
 <button onclick="showTab('banlist')" id="tab-banlist" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Бан-лист</button>
 <button onclick="showTab('orders')" id="tab-orders" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">📦 Заказы</button>
+<button onclick="showTab('logs')" id="tab-logs" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">📊 Логи</button>
 </div>
 <div id="section-users"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px;"><input id="searchInput" type="text" placeholder="Поиск..." oninput="filterUsers()" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:16px;"><div id="usersList"></div><div id="pagination"></div></div></div>
 <div id="section-balance" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3 style="color:#fff; margin-bottom:20px;">Управление балансом</h3><input id="balanceUserId" type="number" placeholder="ID пользователя" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px;"><input id="balanceAmount" type="number" placeholder="Сумма" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px;"><button onclick="changeBalance()" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Применить</button><div id="balanceResult" style="margin-top:12px; text-align:center;"></div></div></div>
@@ -41,7 +42,14 @@
 <div id="ordersList"></div>
 </div>
 </div>
-</div></div></div></section>
+<div id="section-logs" style="display:none;">
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;">
+<h3 style="color:#fff; margin-bottom:20px;">📊 Лог транзакций баланса</h3>
+<button onclick="loadLogs()" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer; margin-bottom:16px;">Обновить</button>
+<div id="logsList"></div>
+</div>
+</div>
+</div></div></section>
 <script>
 var API = 'https://rust-mobile-version-2.onrender.com';
 var allUsers = [];
@@ -50,7 +58,7 @@ var perPage = 100;
 function logout() { localStorage.removeItem('token'); localStorage.removeItem('username'); window.location.href = 'index.html'; }
 function getToken() { return localStorage.getItem('token'); }
 function showTab(tab) {
-    var tabs = ['users','balance','ban','edit','banlist','orders'];
+    var tabs = ['users','balance','ban','edit','banlist','orders','logs'];
     for (var i = 0; i < tabs.length; i++) {
         var t = tabs[i];
         var sec = document.getElementById('section-' + t);
@@ -60,18 +68,28 @@ function showTab(tab) {
     }
     if (tab === 'banlist') renderBanList();
     if (tab === 'orders') loadOrders();
+    if (tab === 'logs') loadLogs();
 }
 function renderUsers(users) {
     var start = (currentPage - 1) * perPage;
     var page = users.slice(start, start + perPage);
     var list = document.getElementById('usersList');
     if (page.length === 0) { list.innerHTML = '<p style="color:#666; text-align:center;">Ничего не найдено</p>'; return; }
-    var html = '';
-    for (var i = 0; i < page.length; i++) {
-        var u = page[i];
-        html += '<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><div><span style="color:#00e5ff;">#' + u.id + '</span> <span style="color:#fff;">' + u.username + '</span>' + (u.is_banned ? ' <span style="background:#ff5555; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px;">БАН</span>' : '') + '</div><div><span style="color:#888; font-size:12px;">' + u.email + '</span> <span style="color:#00e5ff;">' + (u.balance || 0) + '</span></div></div>';
-    }
-    list.innerHTML = html;
+    list.innerHTML = page.map(u => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); flex-wrap:wrap; gap:6px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="color:#00e5ff; font-family:monospace; font-size:12px; min-width:36px;">#${u.id}</span>
+            <span style="color:#fff; font-weight:600;">${u.username}</span>
+            ${u.is_banned ? '<span style="background:rgba(255,80,80,0.2); color:#ff5555; font-size:10px; padding:2px 6px; border-radius:20px;">БАН</span>' : ''}
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span style="color:rgba(255,255,255,0.35); font-size:12px;">${u.email}</span>
+            <span style="color:#00e5ff; font-size:12px;">💰 ${u.balance || 0} ₴</span>
+            <span style="color:rgba(255,255,255,0.25); font-size:11px;">${new Date(u.created_at).toLocaleDateString('ru-RU')}</span>
+            <button onclick="quickBalance(${u.id}, '${u.username}')" style="padding:3px 8px; background:rgba(0,229,255,0.15); border:1px solid rgba(0,229,255,0.3); border-radius:6px; color:#00e5ff; font-size:11px; cursor:pointer;">+баланс</button>
+        </div>
+    </div>
+    `).join('');
     var pag = document.getElementById('pagination');
     var totalPages = Math.ceil(users.length / perPage);
     if (totalPages <= 1) { pag.innerHTML = ''; return; }
@@ -137,6 +155,38 @@ async function markOrderComplete(orderId) {
         body: JSON.stringify({ orderId: orderId, status: 'completed' })
     });
     loadOrders();
+}
+async function quickBalance(userId, username) {
+    var amount = prompt('Пополнить баланс @' + username + '?\nВведите сумму (+ добавить, - списать):');
+    if (!amount || isNaN(parseInt(amount))) return;
+    var comment = prompt('Комментарий (причина):') || 'Пополнение администратором';
+    var res = await fetch(API + '/admin/balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+        body: JSON.stringify({ userId: userId, amount: parseInt(amount), comment: comment })
+    });
+    var data = await res.json();
+    if (res.ok) {
+        alert('✓ Баланс обновлён: ' + data.user.username + ' → ' + data.user.balance + ' ₴');
+        loadAdmin();
+    } else {
+        alert('✗ Ошибка: ' + data.error);
+    }
+}
+async function loadLogs() {
+    var res = await fetch(API + '/admin/balance-logs', {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+    });
+    if (!res.ok) return;
+    var logs = await res.json();
+    var el = document.getElementById('logsList');
+    if (logs.length === 0) {
+        el.innerHTML = '<p style="color:rgba(255,255,255,0.3); text-align:center; padding:20px;">Логов пока нет</p>';
+        return;
+    }
+    el.innerHTML = logs.map(function(l) {
+        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); flex-wrap:wrap; gap:6px;"><div><span style="color:#fff; font-weight:600;">' + l.username + '</span><span style="color:rgba(255,255,255,0.4); font-size:12px; margin-left:8px;">' + l.comment + '</span></div><div style="display:flex; gap:10px; align-items:center;"><span style="color:' + (l.amount > 0 ? '#00ff88' : '#ff5555') + '; font-weight:700; font-size:14px;">' + (l.amount > 0 ? '+' : '') + l.amount + ' ₴</span><span style="color:rgba(255,255,255,0.3); font-size:11px;">' + new Date(l.created_at).toLocaleDateString('ru-RU') + '</span></div></div>';
+    }).join('');
 }
 document.addEventListener('DOMContentLoaded', function() { if (!localStorage.getItem('token')) { document.getElementById('noAccess').style.display='block'; return; } loadAdmin(); });
 </script>

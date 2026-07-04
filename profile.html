@@ -100,6 +100,16 @@
 <p style="color:#00ff88; font-size:16px; font-weight:700;">✓ Активен</p>
 <p style="color:rgba(255,255,255,0.3); font-size:11px; margin-top:4px;">Аккаунт в порядке</p>
 </div>
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px;">
+<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ЗАКАЗОВ</p>
+<p id="profileTotalOrders" style="color:#8a5cff; font-size:24px; font-weight:700;">0</p>
+<p style="color:rgba(255,255,255,0.3); font-size:11px; margin-top:4px;">Всего покупок</p>
+</div>
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px;">
+<p style="color:rgba(255,255,255,0.4); font-size:11px; letter-spacing:2px; margin-bottom:8px;">ПОТРАЧЕНО</p>
+<p id="profileTotalSpent" style="color:#ff7a3d; font-size:24px; font-weight:700;">0 ₴</p>
+<p style="color:rgba(255,255,255,0.3); font-size:11px; margin-top:4px;">Всего пополнений</p>
+</div>
 </div>
 
 
@@ -264,6 +274,8 @@ async function loadProfile() {
         document.getElementById('profileUsernameDetail').textContent = user.username;
         document.getElementById('profileEmail').textContent = user.email;
         document.getElementById('profileBalance').textContent = `${user.balance || 0} ₴`;
+        document.getElementById('profileTotalOrders').textContent = user.totalOrders || 0;
+        document.getElementById('profileTotalSpent').textContent = `${user.totalSpent || 0} ₴`;
         document.getElementById('profileDate').textContent = new Date(user.created_at).toLocaleDateString('ru-RU');
 
         // Показываем кнопку админки только для ID #1

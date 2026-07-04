@@ -8,10 +8,25 @@ const nodemailer = require('nodemailer');
 
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    pass: process.env.EMAIL_PASS.replace(/\s/g, '') // убираем пробелы если есть
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+
+// Проверяем подключение при старте
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('Email transporter error:', error.message);
+  } else {
+    console.log('Email transporter ready');
   }
 });
 
@@ -254,10 +269,25 @@ app.get('/my-orders', authMiddleware, async (req, res) => {
 
 app.get('/profile', authMiddleware, async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, username, email, created_at, balance FROM users WHERE id = $1', [req.user.id]);
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
-    res.json(result.rows[0]);
+    const userResult = await pool.query(
+      'SELECT id, username, email, created_at, balance FROM users WHERE id = $1',
+      [req.user.id]
+    );
+    if (userResult.rows.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
+    
+    const ordersResult = await pool.query(
+      'SELECT COUNT(*) as total, COALESCE(SUM(price),0) as spent FROM orders WHERE user_id = $1',
+      [req.user.id]
+    );
+    
+    const user = userResult.rows[0];
+    res.json({
+      ...user,
+      totalOrders: parseInt(ordersResult.rows[0].total),
+      totalSpent: parseInt(ordersResult.rows[0].spent)
+    });
   } catch (err) {
+    console.error('Profile error:', err.message);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
@@ -275,10 +305,50 @@ app.post('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => 
   const { userId, amount, comment } = req.body;
   if (!userId || amount === undefined) return res.status(400).json({ error: 'Укажите userId и amount' });
   try {
-    const result = await pool.query('UPDATE users SET balance = balance + $1 WHERE id = $2 RETURNING id, username, balance', [amount, userId]);
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
+    const result = await pool.query(
+      'UPDATE users SET balance = balance + $1 WHERE id = $2 RETURNING id, username, balance',
+      [amount, parseInt(userId)]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: `Пользователь #${userId} не найден` });
+    
+    // Логируем транзакцию
+    await pool.query(
+      `CREATE TABLE IF NOT EXISTS balance_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        amount INTEGER NOT NULL,
+        comment VARCHAR(255),
+        admin_id INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      )`
+    );
+    await pool.query(
+      'INSERT INTO balance_logs (user_id, amount, comment, admin_id) VALUES ($1, $2, $3, $4)',
+      [parseInt(userId), amount, comment || 'Без комментария', req.user.id]
+    );
+    
+    console.log(`Balance change: user #${userId} ${amount > 0 ? '+' : ''}${amount} ₴ by admin #${req.user.id} (${comment})`);
     res.json({ success: true, user: result.rows[0] });
-  } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
+  } catch (err) {
+    console.error('Balance error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+app.get('/admin/balance-logs', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT bl.*, u.username 
+      FROM balance_logs bl 
+      JOIN users u ON bl.user_id = u.id 
+      ORDER BY bl.created_at DESC 
+      LIMIT 200
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
 });
 
 
