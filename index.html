@@ -539,7 +539,12 @@ async function doLogin() {
             body: JSON.stringify({ login, password })
         });
         const data = await res.json();
-        if (!res.ok) return document.getElementById('loginError').textContent = data.error;
+        if (!res.ok) {
+            document.getElementById('loginBtn').disabled = false;
+            document.getElementById('loginBtn').textContent = 'Войти';
+            document.getElementById('loginError').textContent = data.error;
+            return;
+        }
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.username);
         closeModal();
@@ -596,7 +601,12 @@ async function doRegister() {
             body: JSON.stringify({ username, email, password, agreedToTerms })
         });
         const data = await res.json();
-        if (!res.ok) return document.getElementById('registerError').textContent = data.error;
+        if (!res.ok) {
+            document.getElementById('registerBtn').disabled = false;
+            document.getElementById('registerBtn').textContent = 'Создать аккаунт';
+            document.getElementById('registerError').textContent = data.error;
+            return;
+        }
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.username);
         closeModal();
