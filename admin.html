@@ -27,12 +27,20 @@
 <button onclick="showTab('ban')" id="tab-ban" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Баны</button>
 <button onclick="showTab('edit')" id="tab-edit" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Редактировать</button>
 <button onclick="showTab('banlist')" id="tab-banlist" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Бан-лист</button>
+<button onclick="showTab('orders')" id="tab-orders" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">📦 Заказы</button>
 </div>
 <div id="section-users"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px;"><input id="searchInput" type="text" placeholder="Поиск..." oninput="filterUsers()" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:16px;"><div id="usersList"></div><div id="pagination"></div></div></div>
 <div id="section-balance" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3 style="color:#fff; margin-bottom:20px;">Управление балансом</h3><input id="balanceUserId" type="number" placeholder="ID пользователя" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px;"><input id="balanceAmount" type="number" placeholder="Сумма" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px;"><button onclick="changeBalance()" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Применить</button><div id="balanceResult" style="margin-top:12px; text-align:center;"></div></div></div>
 <div id="section-ban" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:16px;"><h3>Заблокировать</h3><input id="banUserId" type="number" placeholder="ID" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="banReason" type="text" placeholder="Причина" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><button onclick="banUser()" style="width:100%; padding:12px; background:#ff5555; border:none; border-radius:10px; color:#fff; font-weight:700; cursor:pointer;">Забанить</button><div id="banResult" style="margin-top:12px;"></div></div><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3>Разбанить</h3><input id="unbanUserId" type="number" placeholder="ID" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><button onclick="unbanUser()" style="width:100%; padding:12px; background:#00ff88; border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Разбанить</button><div id="unbanResult" style="margin-top:12px;"></div></div></div>
 <div id="section-edit" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3>Редактировать</h3><input id="editUserId" type="number" placeholder="ID" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="editUsername" type="text" placeholder="Новый никнейм" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="editEmail" type="email" placeholder="Новый email" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><input id="editPassword" type="password" placeholder="Новый пароль" style="width:100%; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; margin-bottom:12px;"><button onclick="editUser()" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Сохранить</button><div id="editResult" style="margin-top:12px;"></div></div></div>
 <div id="section-banlist" style="display:none;"><div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;"><h3>Бан-лист</h3><div id="banList"></div></div></div>
+<div id="section-orders" style="display:none;">
+<div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px;">
+<h3 style="color:#fff; margin-bottom:20px;">📦 Последние заказы</h3>
+<button onclick="loadOrders()" style="padding:8px 16px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; cursor:pointer; margin-bottom:16px;">Обновить</button>
+<div id="ordersList"></div>
+</div>
+</div>
 </div></div></div></section>
 <script>
 var API = 'https://rust-mobile-version-2.onrender.com';
@@ -42,7 +50,7 @@ var perPage = 100;
 function logout() { localStorage.removeItem('token'); localStorage.removeItem('username'); window.location.href = 'index.html'; }
 function getToken() { return localStorage.getItem('token'); }
 function showTab(tab) {
-    var tabs = ['users','balance','ban','edit','banlist'];
+    var tabs = ['users','balance','ban','edit','banlist','orders'];
     for (var i = 0; i < tabs.length; i++) {
         var t = tabs[i];
         var sec = document.getElementById('section-' + t);
@@ -51,6 +59,7 @@ function showTab(tab) {
         if (btn) { btn.style.background = t === tab ? 'linear-gradient(135deg,#00e5ff,#8a5cff)' : 'rgba(255,255,255,0.08)'; btn.style.color = t === tab ? '#000' : '#fff'; btn.style.fontWeight = t === tab ? '700' : '400'; }
     }
     if (tab === 'banlist') renderBanList();
+    if (tab === 'orders') loadOrders();
 }
 function renderUsers(users) {
     var start = (currentPage - 1) * perPage;
@@ -96,6 +105,39 @@ async function banUser() { var uid = document.getElementById('banUserId').value;
 async function unbanUser() { var uid = document.getElementById('unbanUserId').value; var el = document.getElementById('unbanResult'); var r = await fetch(API + '/admin/unban', {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({userId:parseInt(uid)})}); var d = await r.json(); if (r.ok) { el.style.color='#00ff88'; el.textContent = 'OK'; loadAdmin(); } else { el.style.color='#ff5555'; el.textContent = 'Error: ' + d.error; } }
 async function editUser() { var uid = document.getElementById('editUserId').value; var uname = document.getElementById('editUsername').value; var email = document.getElementById('editEmail').value; var pass = document.getElementById('editPassword').value; var el = document.getElementById('editResult'); var body = {userId:parseInt(uid)}; if (uname) body.username = uname; if (email) body.email = email; if (pass) body.password = pass; var r = await fetch(API + '/admin/edit-user', {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify(body)}); var d = await r.json(); if (r.ok) { el.style.color='#00ff88'; el.textContent = 'OK'; loadAdmin(); } else { el.style.color='#ff5555'; el.textContent = 'Error: ' + d.error; } }
 async function loadAdmin() { var r = await fetch(API + '/admin/users', {headers:{'Authorization':'Bearer '+getToken()}}); if (!r.ok) { document.getElementById('noAccess').style.display='block'; return; } allUsers = await r.json(); document.getElementById('adminContent').style.display='block'; var banned = allUsers.filter(function(u){return u.is_banned;}).length; document.getElementById('totalUsers').textContent = allUsers.length; document.getElementById('totalBanned').textContent = banned; document.getElementById('totalActive').textContent = allUsers.length - banned; renderUsers(allUsers); }
+async function loadOrders() {
+    var res = await fetch(API + '/admin/orders', {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+    });
+    if (!res.ok) return;
+    var orders = await res.json();
+    var el = document.getElementById('ordersList');
+    if (orders.length === 0) {
+        el.innerHTML = '<p style="color:rgba(255,255,255,0.3); text-align:center; padding:20px;">Заказов пока нет</p>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < orders.length; i++) {
+        var o = orders[i];
+        var statusColor = o.status === 'completed' ? '#00ff88' : o.status === 'cancelled' ? '#ff5555' : '#ffc800';
+        var statusBg = o.status === 'completed' ? 'rgba(0,255,136,0.2)' : o.status === 'cancelled' ? 'rgba(255,80,80,0.2)' : 'rgba(255,200,0,0.2)';
+        var statusText = o.status === 'completed' ? 'Выдан' : o.status === 'cancelled' ? 'Отменён' : 'Ожидает';
+        var completeBtn = o.status === 'pending' ? '<button onclick="markOrderComplete(' + o.id + ')" style="padding:4px 10px; background:linear-gradient(135deg,#00ff88,#00aa55); border:none; border-radius:6px; color:#000; font-size:11px; font-weight:700; cursor:pointer;">Выдан</button>' : '';
+        html += '<div style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">';
+        html += '<div><span style="color:#00e5ff; font-family:monospace; font-size:12px;">ER-' + String(o.id).padStart(6,'0') + '</span> <span style="color:#fff; margin-left:8px; font-weight:600;">' + o.item_name + '</span> <span style="color:rgba(255,255,255,0.4); margin-left:8px; font-size:12px;">@' + o.username + ' (#' + o.user_id + ')</span></div>';
+        html += '<div style="display:flex; gap:8px; align-items:center;"><span style="color:#00e5ff; font-size:14px; font-weight:700;">' + o.price + ' ₴</span> <span style="background:' + statusBg + '; color:' + statusColor + '; font-size:11px; padding:3px 8px; border-radius:20px;">' + statusText + '</span>' + completeBtn + '<span style="color:rgba(255,255,255,0.3); font-size:11px;">' + new Date(o.created_at).toLocaleDateString('ru-RU') + '</span></div>';
+        html += '</div>';
+    }
+    el.innerHTML = html;
+}
+async function markOrderComplete(orderId) {
+    await fetch(API + '/admin/order-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+        body: JSON.stringify({ orderId: orderId, status: 'completed' })
+    });
+    loadOrders();
+}
 document.addEventListener('DOMContentLoaded', function() { if (!localStorage.getItem('token')) { document.getElementById('noAccess').style.display='block'; return; } loadAdmin(); });
 </script>
 </body></html>

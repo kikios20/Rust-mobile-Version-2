@@ -318,5 +318,80 @@ app.post('/admin/edit-user', authMiddleware, adminMiddleware, async (req, res) =
 });
 
 
+// Таблица заказов
+pool.query(`CREATE TABLE IF NOT EXISTS orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  item_name VARCHAR(100) NOT NULL,
+  price INTEGER NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT NOW()
+)`).catch(err => console.error('Orders table error:', err));
+
+
+// Покупка товара
+app.post('/shop/buy', authMiddleware, async (req, res) => {
+  const { item, price } = req.body;
+  if (!item || !price) return res.status(400).json({ error: 'Укажите товар и цену' });
+  if (price <= 0) return res.status(400).json({ error: 'Неверная цена' });
+  try {
+    // Проверяем баланс
+    const userResult = await pool.query('SELECT balance FROM users WHERE id = $1', [req.user.id]);
+    const user = userResult.rows[0];
+    if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
+    if (user.balance < price) return res.status(400).json({ error: `Недостаточно средств. Ваш баланс: ${user.balance} ₴` });
+    
+    // Списываем баланс и создаём заказ
+    const newBalance = user.balance - price;
+    await pool.query('UPDATE users SET balance = $1 WHERE id = $2', [newBalance, req.user.id]);
+    const orderResult = await pool.query(
+      'INSERT INTO orders (user_id, item_name, price) VALUES ($1, $2, $3) RETURNING id',
+      [req.user.id, item, price]
+    );
+    const orderId = orderResult.rows[0].id;
+    
+    res.json({ 
+      success: true, 
+      orderId: `ER-${String(orderId).padStart(6, '0')}`,
+      newBalance 
+    });
+  } catch (err) {
+    console.error('Buy error:', err.message);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
+// Список заказов для админа
+app.get('/admin/orders', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT o.id, o.item_name, o.price, o.status, o.created_at,
+             u.username, u.id as user_id
+      FROM orders o 
+      JOIN users u ON o.user_id = u.id 
+      ORDER BY o.created_at DESC 
+      LIMIT 100
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
+// Обновить статус заказа
+app.post('/admin/order-status', authMiddleware, adminMiddleware, async (req, res) => {
+  const { orderId, status } = req.body;
+  if (!orderId || !status) return res.status(400).json({ error: 'Укажите orderId и status' });
+  try {
+    await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, orderId]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

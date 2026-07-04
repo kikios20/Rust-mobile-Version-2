@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Магазин — Element Rust</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+
+
+<div class="background">
+<div class="gradient-layer"></div>
+<div class="crystal crystal-1"></div>
+<div class="crystal crystal-2"></div>
+<div class="crystal crystal-3"></div>
+<div class="crystal crystal-4"></div>
+<div class="chemical-layer">
+<span>NaCl</span><span>H₂O</span><span>CO₂</span><span>CuSO₄</span><span>H₂SO₄</span><span>Fe₂O₃</span><span>CH₄</span><span>NH₃</span>
+</div>
+</div>
+
+
+<header>
+<div class="container">
+<div class="logo" onclick="window.location='index.html'" style="cursor:pointer;">
+<div class="logo-icon"><div class="logo-core"></div></div>
+<div class="logo-text"><h1>ELEMENT RUST</h1><p>New Generation Rust Servers</p></div>
+</div>
+<div class="header-buttons" id="headerButtons"></div>
+<div style="display:flex; align-items:center; gap:12px;">
+<button id="headerLoginBtn" onclick="window.location='index.html'" style="padding:8px 14px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:13px; cursor:pointer;">Войти</button>
+<div class="burger" id="burger"><span></span><span></span><span></span></div>
+</div>
+</div>
+</header>
+
+
+<div class="mobile-menu" id="mobileMenu">
+<button onclick="document.getElementById('mobileMenu').classList.remove('active')" style="position:absolute; top:20px; right:20px; background:none; border:none; color:rgba(255,255,255,0.6); font-size:24px; cursor:pointer;">✕</button>
+<div style="border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:20px; margin-bottom:20px;">
+<div id="mobileUserInfo" style="text-align:center; display:none;">
+<div id="mobileAvatar" style="width:50px; height:50px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#000; font-weight:700;"></div>
+<div id="mobileUsername" style="color:#00e5ff; font-weight:700; font-size:16px; margin-bottom:4px;"></div>
+<button onclick="logout()" style="background:none; border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:rgba(255,255,255,0.6); font-size:12px; padding:5px 12px; cursor:pointer;">Выйти</button>
+</div>
+<div id="mobileAuthButtons">
+<button onclick="window.location='index.html'" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Войти / Регистрация</button>
+</div>
+</div>
+<div style="display:flex; flex-direction:column; gap:4px;">
+<a href="index.html" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🏠 Главная</a>
+<a href="index.html#servers" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🖥 Серверы</a>
+<a href="shop.html" style="padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">🛒 Магазин</a>
+<a href="rules.html" style="padding:12px 0;">📋 Правила</a>
+</div>
+</div>
+
+
+<section style="padding-top:120px; padding-bottom:60px;">
+<div class="container">
+
+
+<div class="section-header">
+<span class="section-tag">МАГАЗИН</span>
+<h2>Привилегии и предметы</h2>
+<p style="color:var(--muted);">Поддержите проект и получите уникальные преимущества</p>
+</div>
+
+
+<!-- Баланс пользователя -->
+<div id="userBalanceBlock" style="display:none; background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.2); border-radius:16px; padding:20px; margin-bottom:40px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+<div>
+<p style="color:rgba(255,255,255,0.5); font-size:12px; letter-spacing:2px;">ВАШ БАЛАНС</p>
+<p id="userBalance" style="color:#00e5ff; font-size:28px; font-weight:800;">0 ₴</p>
+</div>
+<a href="profile.html" style="padding:10px 20px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:10px; color:#000; font-weight:700; text-decoration:none; font-size:14px;">Пополнить</a>
+</div>
+
+
+<!-- Категории -->
+<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:30px;" id="categories">
+<button onclick="filterCategory('all')" class="cat-btn active-cat" style="padding:8px 18px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:20px; color:#000; font-weight:700; font-size:13px; cursor:pointer;">Все</button>
+<button onclick="filterCategory('vip')" class="cat-btn" style="padding:8px 18px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:20px; color:#fff; font-size:13px; cursor:pointer;">⭐ VIP</button>
+<button onclick="filterCategory('items')" class="cat-btn" style="padding:8px 18px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:20px; color:#fff; font-size:13px; cursor:pointer;">🎁 Предметы</button>
+<button onclick="filterCategory('kits')" class="cat-btn" style="padding:8px 18px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:20px; color:#fff; font-size:13px; cursor:pointer;">🎒 Наборы</button>
+</div>
+
+
+<!-- Товары -->
+<div id="shopGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+
+
+<div class="shop-item" data-category="vip" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:24px; transition:0.3s;">
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+<div style="font-size:40px;">⭐</div>
+<span style="background:rgba(0,229,255,0.15); color:#00e5ff; font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid rgba(0,229,255,0.3);">VIP</span>
+</div>
+<h3 style="color:#fff; font-size:18px; margin-bottom:8px;">VIP статус</h3>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; line-height:1.5; margin-bottom:20px;">Приоритетный вход на сервер, уникальный префикс в чате, дополнительные команды.</p>
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<span style="color:#00e5ff; font-size:22px; font-weight:800;">150 ₴</span>
+<button onclick="buyItem('VIP статус', 150)" style="padding:10px 20px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Купить</button>
+</div>
+</div>
+
+
+<div class="shop-item" data-category="vip" style="background:rgba(255,255,255,0.03); border:1px solid rgba(138,92,255,0.3); border-radius:18px; padding:24px; transition:0.3s; position:relative; overflow:hidden;">
+<div style="position:absolute; top:0; right:0; background:linear-gradient(135deg,#8a5cff,#ff7a3d); color:#fff; font-size:11px; font-weight:700; padding:6px 14px; border-radius:0 18px 0 10px;">ХИТ</div>
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+<div style="font-size:40px;">💎</div>
+<span style="background:rgba(138,92,255,0.15); color:#8a5cff; font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid rgba(138,92,255,0.3);">PREMIUM</span>
+</div>
+<h3 style="color:#fff; font-size:18px; margin-bottom:8px;">Premium статус</h3>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; line-height:1.5; margin-bottom:20px;">Все привилегии VIP + эксклюзивный скин, удвоенный лут, защита базы 24ч.</p>
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<span style="color:#8a5cff; font-size:22px; font-weight:800;">300 ₴</span>
+<button onclick="buyItem('Premium статус', 300)" style="padding:10px 20px; background:linear-gradient(135deg,#8a5cff,#ff7a3d); border:none; border-radius:10px; color:#fff; font-weight:700; cursor:pointer;">Купить</button>
+</div>
+</div>
+
+
+<div class="shop-item" data-category="kits" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:24px; transition:0.3s;">
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+<div style="font-size:40px;">🎒</div>
+<span style="background:rgba(255,122,61,0.15); color:#ff7a3d; font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid rgba(255,122,61,0.3);">НАБОР</span>
+</div>
+<h3 style="color:#fff; font-size:18px; margin-bottom:8px;">Стартовый набор</h3>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; line-height:1.5; margin-bottom:20px;">Металлическая броня, AK-47, 500 патронов, еда на 3 дня, медикаменты.</p>
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<span style="color:#ff7a3d; font-size:22px; font-weight:800;">80 ₴</span>
+<button onclick="buyItem('Стартовый набор', 80)" style="padding:10px 20px; background:linear-gradient(135deg,#ff7a3d,#8a5cff); border:none; border-radius:10px; color:#fff; font-weight:700; cursor:pointer;">Купить</button>
+</div>
+</div>
+
+
+<div class="shop-item" data-category="items" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:24px; transition:0.3s;">
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+<div style="font-size:40px;">🎁</div>
+<span style="background:rgba(0,255,136,0.15); color:#00ff88; font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid rgba(0,255,136,0.3);">ПРЕДМЕТ</span>
+</div>
+<h3 style="color:#fff; font-size:18px; margin-bottom:8px;">Ресурсы x1000</h3>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; line-height:1.5; margin-bottom:20px;">1000 дерева, 1000 камня, 500 металла, 200 серы для старта.</p>
+<div style="display:flex; justify-content:space-between; align-items:center;">
+<span style="color:#00ff88; font-size:22px; font-weight:800;">50 ₴</span>
+<button onclick="buyItem('Ресурсы x1000', 50)" style="padding:10px 20px; background:linear-gradient(135deg,#00ff88,#00e5ff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Купить</button>
+</div>
+</div>
+
+
+</div>
+</div>
+</section>
+
+
+<!-- Модальное окно покупки -->
+<div id="buyModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); align-items:center; justify-content:center;">
+<div style="background:#0c0e16; border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:40px 30px; width:90%; max-width:400px; position:relative;">
+<button onclick="closeBuyModal()" style="position:absolute; top:15px; right:20px; background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">✕</button>
+<h2 style="color:#fff; margin-bottom:8px; font-size:20px;">Подтверждение покупки</h2>
+
+
+<div id="buyNotLoggedIn" style="display:none; text-align:center; padding:20px 0;">
+<p style="color:rgba(255,255,255,0.5); margin-bottom:20px;">Для покупки необходимо войти в аккаунт</p>
+<a href="index.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:10px; color:#000; font-weight:700; text-decoration:none;">Войти</a>
+</div>
+
+
+<div id="buyContent" style="display:none;">
+<div style="background:rgba(255,255,255,0.04); border-radius:12px; padding:16px; margin:20px 0;">
+<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+<span style="color:rgba(255,255,255,0.5);">Товар:</span>
+<span id="buyItemName" style="color:#fff; font-weight:600;"></span>
+</div>
+<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+<span style="color:rgba(255,255,255,0.5);">Цена:</span>
+<span id="buyItemPrice" style="color:#00e5ff; font-weight:700;"></span>
+</div>
+<div style="display:flex; justify-content:space-between;">
+<span style="color:rgba(255,255,255,0.5);">Ваш баланс:</span>
+<span id="buyUserBalance" style="color:#fff; font-weight:600;"></span>
+</div>
+</div>
+
+
+<div id="buyTgBlock" style="background:rgba(255,122,61,0.08); border:1px solid rgba(255,122,61,0.3); border-radius:12px; padding:16px; margin-bottom:20px;">
+<p style="color:#ff7a3d; font-size:13px; font-weight:700; margin-bottom:8px;">📱 Как получить товар:</p>
+<p style="color:rgba(255,255,255,0.6); font-size:12px; line-height:1.6;">После покупки напишите в Telegram <a href="https://t.me/ТВОЙ_НИК" target="_blank" style="color:#00e5ff;">@ТВОЙ_НИК</a> номер вашего заказа и никнейм в игре. Товар будет выдан в течение 24 часов.</p>
+</div>
+
+
+<button id="confirmBuyBtn" onclick="confirmPurchase()" style="width:100%; padding:13px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Купить</button>
+<div id="buyError" style="color:#ff5555; font-size:13px; margin-top:12px; text-align:center;"></div>
+</div>
+
+
+<div id="buySuccess" style="display:none; text-align:center; padding:20px 0;">
+<div style="font-size:60px; margin-bottom:16px;">✅</div>
+<h3 style="color:#fff; margin-bottom:8px;">Покупка совершена!</h3>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:8px;">Номер заказа: <span id="orderNumber" style="color:#00e5ff; font-family:monospace; font-weight:700;"></span></p>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:24px;">Напишите в Telegram <a href="https://t.me/ТВОЙ_НИК" target="_blank" style="color:#00e5ff;">@ТВОЙ_НИК</a> этот номер и ваш игровой ник для получения товара.</p>
+<button onclick="closeBuyModal()" style="padding:12px 24px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Закрыть</button>
+</div>
+</div>
+</div>
+
+
+<footer>
+<div class="container">
+<div class="footer-grid">
+<div><div class="footer-logo">ELEMENT RUST</div><p>Лаборатория нового поколения серверов Rust.</p></div>
+<div><h4>Навигация</h4>
+<ul style="position:relative; z-index:5;">
+<li><a href="index.html">Главная</a></li>
+<li><a href="index.html#servers">Серверы</a></li>
+<li><a href="shop.html">Магазин</a></li>
+<li><a href="rules.html">Правила</a></li>
+<li><a href="terms.html">Соглашение</a></li>
+<li><a href="privacy.html">Конфиденциальность</a></li>
+</ul></div>
+<div><h4>Сообщество</h4><ul><li class="soon">Discord — скоро</li><li class="soon">Telegram — скоро</li></ul></div>
+<div><h4>Статус</h4><div class="footer-status"><span class="status-dot"></span>Все серверы работают</div></div>
+</div>
+<div style="text-align:center; margin-top:20px; display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+<a href="terms.html" style="color:var(--muted); font-size:12px;">Пользовательское соглашение</a>
+<a href="privacy.html" style="color:var(--muted); font-size:12px;">Политика конфиденциальности</a>
+</div>
+<div class="footer-bottom">© 2026 ELEMENT RUST. Все права защищены.</div>
+</div>
+</footer>
+
+
+<script>
+const API = 'https://rust-mobile-version-2.onrender.com';
+let currentItem = null;
+let currentPrice = 0;
+let userBalance = 0;
+
+
+const burger = document.getElementById('burger');
+const menu = document.getElementById('mobileMenu');
+if (burger && menu) {
+    burger.addEventListener('click', () => menu.classList.toggle('active'));
+    menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => menu.classList.remove('active')));
+}
+
+
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    window.location.reload();
+}
+
+
+function filterCategory(cat) {
+    document.querySelectorAll('.shop-item').forEach(item => {
+        item.style.display = (cat === 'all' || item.dataset.category === cat) ? 'block' : 'none';
+    });
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.style.background = 'rgba(255,255,255,0.08)';
+        btn.style.color = '#fff';
+        btn.style.border = '1px solid rgba(255,255,255,0.1)';
+        btn.style.fontWeight = '400';
+    });
+    event.target.style.background = 'linear-gradient(135deg,#00e5ff,#8a5cff)';
+    event.target.style.color = '#000';
+    event.target.style.border = 'none';
+    event.target.style.fontWeight = '700';
+}
+
+
+function buyItem(name, price) {
+    currentItem = name;
+    currentPrice = price;
+    const modal = document.getElementById('buyModal');
+    modal.style.display = 'flex';
+    document.getElementById('buySuccess').style.display = 'none';
+    document.getElementById('buyError').textContent = '';
+
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        document.getElementById('buyNotLoggedIn').style.display = 'block';
+        document.getElementById('buyContent').style.display = 'none';
+        return;
+    }
+    document.getElementById('buyNotLoggedIn').style.display = 'none';
+    document.getElementById('buyContent').style.display = 'block';
+    document.getElementById('buyItemName').textContent = name;
+    document.getElementById('buyItemPrice').textContent = `${price} ₴`;
+    document.getElementById('buyUserBalance').textContent = `${userBalance} ₴`;
+}
+
+
+function closeBuyModal() {
+    document.getElementById('buyModal').style.display = 'none';
+}
+
+
+async function confirmPurchase() {
+    const token = localStorage.getItem('token');
+    const btn = document.getElementById('confirmBuyBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Обработка...';
+
+
+    try {
+        const res = await fetch(`${API}/shop/buy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ item: currentItem, price: currentPrice })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            btn.disabled = false;
+            btn.textContent = 'Купить';
+            document.getElementById('buyError').textContent = data.error;
+            return;
+        }
+        document.getElementById('buyContent').style.display = 'none';
+        document.getElementById('buySuccess').style.display = 'block';
+        document.getElementById('orderNumber').textContent = data.orderId;
+        userBalance = data.newBalance;
+        document.getElementById('userBalance').textContent = `${userBalance} ₴`;
+        loadUserBalance();
+    } catch {
+        btn.disabled = false;
+        btn.textContent = 'Купить';
+        document.getElementById('buyError').textContent = 'Ошибка соединения с сервером';
+    }
+}
+
+
+async function loadUserBalance() {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    if (!token || !username) return;
+
+
+    const headerButtons = document.getElementById('headerButtons');
+    if (headerButtons) {
+        headerButtons.innerHTML = `<span onclick="window.location='profile.html'" style="color:#00e5ff; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:8px;"><span style="width:32px; height:32px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; color:#000; font-weight:700;">${username[0].toUpperCase()}</span>${username}</span>`;
+    }
+    const headerLoginBtn = document.getElementById('headerLoginBtn');
+    if (headerLoginBtn) headerLoginBtn.style.display = 'none';
+
+
+    const mobileAvatar = document.getElementById('mobileAvatar');
+    const mobileUsername = document.getElementById('mobileUsername');
+    const mobileAuth = document.getElementById('mobileAuthButtons');
+    const mobileUser = document.getElementById('mobileUserInfo');
+    if (mobileAvatar) mobileAvatar.textContent = username[0].toUpperCase();
+    if (mobileUsername) mobileUsername.textContent = username;
+    if (mobileAuth) mobileAuth.style.display = 'none';
+    if (mobileUser) mobileUser.style.display = 'block';
+
+
+    try {
+        const res = await fetch(`${API}/profile`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            userBalance = data.balance || 0;
+            const balanceBlock = document.getElementById('userBalanceBlock');
+            if (balanceBlock) {
+                balanceBlock.style.display = 'flex';
+                document.getElementById('userBalance').textContent = `${userBalance} ₴`;
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load balance:', e);
+    }
+}
+
+
+loadUserBalance();
+</script>
+</body>
+</html>
