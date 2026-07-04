@@ -78,9 +78,20 @@ pool.query(`CREATE TABLE IF NOT EXISTS users (
   agreed_to_terms BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMP DEFAULT NOW()
 )`).then(async () => {
-  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS balance INTEGER DEFAULT 0`);
-  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT false`);
-  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason VARCHAR(255)`);
+  try { await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS balance INTEGER DEFAULT 0`); } catch(e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT false`); } catch(e) {}
+  try { await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason VARCHAR(255)`); } catch(e) {}
+  
+  // Принудительно проверяем и создаём колонки если их нет
+  const check = await pool.query(`
+    SELECT column_name FROM information_schema.columns 
+    WHERE table_name='users' AND column_name='is_banned'
+  `);
+  if (check.rows.length === 0) {
+    await pool.query(`ALTER TABLE users ADD COLUMN is_banned BOOLEAN DEFAULT false`);
+    await pool.query(`ALTER TABLE users ADD COLUMN ban_reason VARCHAR(255)`);
+    console.log('Added missing columns');
+  }
   console.log('Database ready');
 }).catch(err => console.error('DB init error:', err));
 
