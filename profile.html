@@ -125,10 +125,12 @@
 </div>
 
 
-<!-- История покупок -->
+<!-- История заказов -->
 <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; margin-bottom:24px;">
-<h3 style="color:#fff; font-size:16px; margin-bottom:16px;">История покупок</h3>
-<p style="color:rgba(255,255,255,0.3); font-size:14px; text-align:center; padding:20px 0;">Покупок пока нет</p>
+<h3 style="color:#fff; font-size:16px; margin-bottom:16px;">История заказов</h3>
+<div id="ordersList">
+<p style="color:rgba(255,255,255,0.3); font-size:14px; text-align:center; padding:20px 0;">Загрузка...</p>
+</div>
 </div>
 
 
@@ -191,6 +193,34 @@ function logout() {
 }
 
 
+async function loadOrders(token) {
+    try {
+        const res = await fetch('https://rust-mobile-version-2.onrender.com/my-orders', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) return;
+        const orders = await res.json();
+        const el = document.getElementById('ordersList');
+        if (orders.length === 0) {
+            el.innerHTML = '<p style="color:rgba(255,255,255,0.3); font-size:14px; text-align:center; padding:20px 0;">Заказов пока нет</p>';
+            return;
+        }
+        el.innerHTML = orders.map(o => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; gap:8px;">
+                <div>
+                    <p style="color:#fff; font-weight:600; font-size:14px;">${o.item_name}</p>
+                    <p style="color:rgba(255,255,255,0.4); font-size:12px; margin-top:2px;">ER-${String(o.id).padStart(6,'0')} · ${new Date(o.created_at).toLocaleDateString('ru-RU')}</p>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span style="color:#00e5ff; font-weight:700;">${o.price} ₴</span>
+                    <span style="background:${o.status==='completed'?'rgba(0,255,136,0.15)':o.status==='cancelled'?'rgba(255,80,80,0.15)':'rgba(255,200,0,0.15)'}; color:${o.status==='completed'?'#00ff88':o.status==='cancelled'?'#ff5555':'#ffc800'}; font-size:11px; padding:3px 10px; border-radius:20px;">${o.status==='completed'?'✓ Выдан':o.status==='cancelled'?'✗ Отменён':'⏳ Ожидает'}</span>
+                </div>
+            </div>
+        `).join('');
+    } catch {}
+}
+
+
 async function loadProfile() {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
@@ -241,6 +271,8 @@ async function loadProfile() {
             document.getElementById('adminLink').style.display = 'block';
         }
 
+        // Загружаем заказы
+        loadOrders(token);
 
     } catch (err) {
         document.getElementById('notLoggedIn').style.display = 'block';
@@ -252,5 +284,6 @@ document.addEventListener('DOMContentLoaded', loadProfile);
 </script>
 
 
+<script src="js/notifications.js"></script>
 </body>
 </html>

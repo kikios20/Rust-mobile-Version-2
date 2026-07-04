@@ -378,7 +378,7 @@ NEW GENERATION RUST SERVERS
                 <p>Покупайте привилегии, косметические предметы, наборы и многое другое.</p>
             </div>
             <div class="shop-right">
-                <button class="shop-button" disabled>Скоро</button>
+                <a href="shop.html" class="shop-button">Перейти в магазин</a>
             </div>
         </div>
     </div>
@@ -548,6 +548,48 @@ function switchForm(form) {
         document.getElementById('regStep3').style.display = 'none';
         emailVerified = false;
         verifiedEmail = '';
+    }
+}
+
+
+async function doLogin() {
+    const login = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const btn = document.getElementById('loginBtn');
+    const errEl = document.getElementById('loginError');
+
+    if (!login || !password) {
+        btn.disabled = false;
+        btn.textContent = 'Войти';
+        errEl.textContent = 'Заполните все поля';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Подождите...';
+    errEl.textContent = '';
+
+    try {
+        const res = await fetch(`${API}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            btn.disabled = false;
+            btn.textContent = 'Войти';
+            errEl.textContent = data.error;
+            return;
+        }
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
+        closeModal();
+        updateAuthUI();
+    } catch {
+        btn.disabled = false;
+        btn.textContent = 'Войти';
+        errEl.textContent = 'Ошибка соединения с сервером';
     }
 }
 
@@ -728,5 +770,6 @@ document.addEventListener('DOMContentLoaded', updateAuthUI);
 <script src="js/main.js"></script>
 <script src="js/animations.js"></script>
 
+<script src="js/notifications.js"></script>
 </body>
 </html>

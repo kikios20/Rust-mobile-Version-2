@@ -228,6 +228,20 @@ app.post('/login', rateLimit, async (req, res) => {
 });
 
 
+// Проверка незакрытых заказов пользователя
+app.get('/my-orders', authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, item_name, price, status, created_at FROM orders WHERE user_id = $1 ORDER BY created_at DESC',
+      [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+
 app.get('/profile', authMiddleware, async (req, res) => {
   try {
     const result = await pool.query('SELECT id, username, email, created_at, balance FROM users WHERE id = $1', [req.user.id]);
