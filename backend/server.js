@@ -38,6 +38,26 @@ function generateCode() {
 }
 
 
+function canSendCode(email) {
+  const now = Date.now();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+  const attempts = emailSendAttempts.get(email.toLowerCase()) || [];
+  const validAttempts = attempts.filter(t => now - t < oneDayMs);
+  if (validAttempts.length >= 2) {
+    return { allowed: false, message: 'Вы отправили максимум кодов (2) за последние 24 часа. Попробуйте позже.' };
+  }
+  return { allowed: true };
+}
+
+
+function recordCodeSent(email) {
+  const emailLower = email.toLowerCase();
+  const attempts = emailSendAttempts.get(emailLower) || [];
+  attempts.push(Date.now());
+  emailSendAttempts.set(emailLower, attempts);
+}
+
+
 async function sendVerificationEmail(email, code) {
   const msg = {
     to: email,
@@ -60,6 +80,35 @@ async function sendVerificationEmail(email, code) {
   try {
     await sgMail.send(msg);
     console.log(`Verification email sent to ${email}`);
+  } catch (err) {
+    console.error('SendGrid error:', err.message);
+    throw err;
+  }
+}
+
+
+async function sendPasswordResetEmail(email, code) {
+  const msg = {
+    to: email,
+    from: process.env.SENDGRID_FROM_EMAIL,
+    subject: 'Сброс пароля — Element Rust',
+    html: `
+      <div style="background:#05070d; color:#fff; padding:40px; font-family:Inter,sans-serif; max-width:500px; margin:0 auto; border-radius:16px;">
+        <h1 style="color:#ff7a3d; margin-bottom:8px;">Сброс пароля</h1>
+        <p style="color:rgba(255,255,255,0.6); margin-bottom:30px;">Вы запросили сброс пароля для аккаунта Element Rust</p>
+        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:30px; text-align:center; margin-bottom:24px;">
+          <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:12px;">Ваш код сброса:</p>
+          <div style="font-size:36px; font-weight:800; letter-spacing:8px; color:#ff7a3d;">${code}</div>
+          <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:12px;">Код действителен 15 минут</p>
+        </div>
+        <p style="color:rgba(255,255,255,0.4); font-size:12px;">Если вы не запрашивали сброс пароля — просто проигнорируйте это письмо.</p>
+      </div>
+    `
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log(`Password reset email sent to ${email}`);
   } catch (err) {
     console.error('SendGrid error:', err.message);
     throw err;
@@ -196,6 +245,10 @@ app.post('/send-verification', rateLimit, async (req, res) => {
     return res.status(400).json({ error: 'Неверный email' });
   }
   try {
+    const limitCheck = canSendCode(email);
+    if (!limitCheck.allowed) {
+      return res.status(429).json({ error: limitCheck.message });
+    }
     // Проверяем что email ещё не занят
     const existing = await pool.query('SELECT id FROM users WHERE email = LOWER($1)', [email.trim()]);
     if (existing.rows.length > 0) {
@@ -207,6 +260,7 @@ app.post('/send-verification', rateLimit, async (req, res) => {
       expires: Date.now() + 10 * 60 * 1000 // 10 минут
     });
     await sendVerificationEmail(email, code);
+    recordCodeSent(email);
     res.json({ success: true, message: 'Код отправлен на вашу почту' });
   } catch (err) {
     console.error('Send verification error:', err.message);
@@ -488,4 +542,69 @@ app.post('/admin/order-status', authMiddleware, adminMiddleware, async (req, res
 
 
 const PORT = process.env.PORT || 3000;
+
+
+// Забыл пароль
+app.post('/forgot-password', rateLimit, async (req, res) => {
+  const { email } = req.body;
+  if (!email || !validateEmail(email)) {
+    return res.status(400).json({ error: 'Неверный email' });
+  }
+  try {
+    const limitCheck = canSendCode(email);
+    if (!limitCheck.allowed) {
+      return res.status(429).json({ error: limitCheck.message });
+    }
+    const user = await pool.query('SELECT id FROM users WHERE email = LOWER($1)', [email.trim()]);
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: 'Пользователь с этим email не найден' });
+    }
+    const code = generateCode();
+    passwordResetCodes.set(email.toLowerCase(), { code, expires: Date.now() + 15 * 60 * 1000 });
+    await sendPasswordResetEmail(email, code);
+    recordCodeSent(email);
+    res.json({ success: true, message: 'Код отправлен на вашу почту' });
+  } catch (err) {
+    console.error('Forgot password error:', err.message);
+    res.status(500).json({ error: 'Не удалось отправить письмо' });
+  }
+});
+
+
+// Проверить код сброса
+app.post('/verify-reset-code', (req, res) => {
+  const { email, code } = req.body;
+  if (!email || !code) return res.status(400).json({ error: 'Email и код обязательны' });
+  const resetData = passwordResetCodes.get(email.toLowerCase());
+  if (!resetData) return res.status(400).json({ error: 'Код не найден или истёк' });
+  if (resetData.code !== code) return res.status(400).json({ error: 'Неверный код' });
+  if (Date.now() > resetData.expires) {
+    passwordResetCodes.delete(email.toLowerCase());
+    return res.status(400).json({ error: 'Код истёк' });
+  }
+  res.json({ success: true, message: 'Код подтвержден' });
+});
+
+
+// Сбросить пароль
+app.post('/reset-password', async (req, res) => {
+  const { email, code, newPassword } = req.body;
+  if (!email || !code || !newPassword) return res.status(400).json({ error: 'Все поля обязательны' });
+  if (newPassword.length < 6) return res.status(400).json({ error: 'Пароль минимум 6 символов' });
+  const resetData = passwordResetCodes.get(email.toLowerCase());
+  if (!resetData || resetData.code !== code || Date.now() > resetData.expires) {
+    return res.status(400).json({ error: 'Код неверный или истёк' });
+  }
+  try {
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+    await pool.query('UPDATE users SET password_hash = $1 WHERE email = LOWER($2)', [hashedPassword, email.trim()]);
+    passwordResetCodes.delete(email.toLowerCase());
+    res.json({ success: true, message: 'Пароль успешно изменен' });
+  } catch (err) {
+    console.error('Reset password error:', err.message);
+    res.status(500).json({ error: 'Ошибка при изменении пароля' });
+  }
+});
+
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
