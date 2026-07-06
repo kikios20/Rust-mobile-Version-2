@@ -15,6 +15,22 @@ console.log('SendGrid from email: ' + process.env.SENDGRID_FROM_EMAIL);
 
 // Хранилище кодов верификации (в памяти, очищается при перезапуске)
 const verificationCodes = new Map();
+const passwordResetCodes = new Map();
+const emailSendAttempts = new Map();
+
+
+setInterval(() => {
+  const now = Date.now();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+  emailSendAttempts.forEach((timestamps, email) => {
+    const validTimestamps = timestamps.filter(t => now - t < oneDayMs);
+    if (validTimestamps.length === 0) {
+      emailSendAttempts.delete(email);
+    } else {
+      emailSendAttempts.set(email, validTimestamps);
+    }
+  });
+}, 60 * 60 * 1000);
 
 
 function generateCode() {
