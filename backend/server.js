@@ -4,31 +4,13 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS.replace(/\s/g, '') // убираем пробелы если есть
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
-
-
-// Проверяем подключение при старте
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('Email transporter error:', error.message);
-  } else {
-    console.log('Email transporter ready');
-  }
-});
+// SendGrid setup
+console.log('SendGrid API Key configured: ' + (process.env.SENDGRID_API_KEY ? 'Yes' : 'No'));
+console.log('SendGrid from email: ' + process.env.SENDGRID_FROM_EMAIL);
 
 
 // Хранилище кодов верификации (в памяти, очищается при перезапуске)
@@ -41,24 +23,26 @@ function generateCode() {
 
 
 async function sendVerificationEmail(email, code) {
-  try {
-    await transporter.sendMail({
-      from: `"Element Rust" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Подтверждение email — Element Rust',
-      html: `
-        <div style="background:#05070d; color:#fff; padding:40px; font-family:Inter,sans-serif; max-width:500px; margin:0 auto; border-radius:16px;">
-          <h1 style="color:#00e5ff; margin-bottom:8px;">Element Rust</h1>
-          <p style="color:rgba(255,255,255,0.6); margin-bottom:30px;">Подтверждение регистрации</p>
-          <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:30px; text-align:center; margin-bottom:24px;">
-            <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:12px;">Ваш код подтверждения:</p>
-            <div style="font-size:36px; font-weight:800; letter-spacing:8px; color:#00e5ff;">${code}</div>
-            <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:12px;">Код действителен 10 минут</p>
-          </div>
-          <p style="color:rgba(255,255,255,0.4); font-size:12px;">Если вы не регистрировались на Element Rust — просто проигнорируйте это письмо.</p>
+  const msg = {
+    to: email,
+    from: process.env.SENDGRID_FROM_EMAIL,
+    subject: 'Подтверждение email — Element Rust',
+    html: `
+      <div style="background:#05070d; color:#fff; padding:40px; font-family:Inter,sans-serif; max-width:500px; margin:0 auto; border-radius:16px;">
+        <h1 style="color:#00e5ff; margin-bottom:8px;">Element Rust</h1>
+        <p style="color:rgba(255,255,255,0.6); margin-bottom:30px;">Подтверждение регистрации</p>
+        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:30px; text-align:center; margin-bottom:24px;">
+          <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:12px;">Ваш код подтверждения:</p>
+          <div style="font-size:36px; font-weight:800; letter-spacing:8px; color:#00e5ff;">${code}</div>
+          <p style="color:rgba(255,255,255,0.3); font-size:12px; margin-top:12px;">Код действителен 10 минут</p>
         </div>
-      `
-    });
+        <p style="color:rgba(255,255,255,0.4); font-size:12px;">Если вы не регистрировались на Element Rust — просто проигнорируйте это письмо.</p>
+      </div>
+    `
+  };
+
+  try {
+    await sgMail.send(msg);
     console.log(`Verification email sent to ${email}`);
   } catch (err) {
     console.error('Email send error:', err.message);
