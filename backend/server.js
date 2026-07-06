@@ -45,7 +45,7 @@ async function sendVerificationEmail(email, code) {
     await sgMail.send(msg);
     console.log(`Verification email sent to ${email}`);
   } catch (err) {
-    console.error('Email send error:', err.message);
+    console.error('SendGrid error:', err.message);
     throw err;
   }
 }
@@ -73,9 +73,9 @@ const pool = new Pool({
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) { console.error('JWT_SECRET не задан!'); process.exit(1); }
-console.log('Email config:', {
-  user: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
-  pass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET'
+console.log('SendGrid config:', {
+  apiKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET',
+  fromEmail: process.env.SENDGRID_FROM_EMAIL || 'NOT SET'
 });
 
 
