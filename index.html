@@ -471,6 +471,7 @@ NEW GENERATION RUST SERVERS
 <input id="loginPassword" type="password" placeholder="Пароль" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:20px; outline:none;">
 <button id="loginBtn" onclick="doLogin()" style="width:100%; padding:13px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Войти</button>
 <p style="color:rgba(255,255,255,0.5); font-size:13px; text-align:center; margin-top:16px;">Нет аккаунта? <span onclick="switchForm('register')" style="color:#00e5ff; cursor:pointer;">Регистрация</span></p>
+<p style="color:rgba(255,255,255,0.4); font-size:12px; text-align:center;">Забыли пароль? <span onclick="switchForm('forgot')" style="color:#00e5ff; cursor:pointer;">Восстановить</span></p>
 <div id="loginError" style="color:#ff5555; font-size:13px; margin-top:12px; text-align:center;"></div>
 </div>
 
@@ -493,7 +494,7 @@ NEW GENERATION RUST SERVERS
 <p style="color:rgba(255,255,255,0.6); font-size:13px; margin-bottom:16px; text-align:center;">Код отправлен на <span id="regEmailShow" style="color:#00e5ff;"></span></p>
 <input id="regCode" type="text" placeholder="6-значный код" maxlength="6" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:18px; letter-spacing:8px; text-align:center; margin-bottom:12px; outline:none;">
 <button id="verifyCodeBtn" onclick="verifyCode()" style="width:100%; padding:13px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer;">Подтвердить</button>
-<p style="color:rgba(255,255,255,0.6); font-size:12px; text-align:center; margin-top:12px; margin-bottom:8px;">⚠️ Проверьте папку <strong>Спам</strong> если письма нет</p>
+<p style="color:#ff6b6b; background:rgba(255,107,107,0.15); padding:10px; border-radius:8px; border-left:3px solid #ff6b6b; font-size:12px; text-align:center; margin-top:12px; margin-bottom:8px; font-weight:600;">⚠️ ПРОВЕРЬТЕ ПАПКУ СПАМ если письма нет в основной почте!</p>
 <p style="color:rgba(255,255,255,0.4); font-size:12px; text-align:center;">Не пришёл код? <span onclick="sendVerificationCode()" style="color:#00e5ff; cursor:pointer;">Отправить снова</span></p>
 <div id="verifyCodeError" style="color:#ff5555; font-size:13px; margin-top:12px; text-align:center;"></div>
 </div>
@@ -525,6 +526,41 @@ NEW GENERATION RUST SERVERS
 const API = 'https://rust-mobile-version-2.onrender.com';
 
 
+// ФОРМЫ ВОССТАНОВЛЕНИЯ ПАРОЛЯ (внутри модального окна)
+const modalForms = `
+<!-- Форма: Забыли пароль -->
+<div id="forgotForm" style="display:none;">
+<h2 style="color:#fff; margin-bottom:8px; font-size:22px;">Восстановление</h2>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:24px;">Введите email для сброса пароля</p>
+<input id="forgotEmail" type="email" placeholder="Ваш email" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:16px; outline:none;">
+<button onclick="sendResetCode()" style="width:100%; padding:13px; background:linear-gradient(135deg,#ff7a3d,#ff5252); border:none; border-radius:12px; color:#fff; font-weight:700; font-size:15px; cursor:pointer;">Отправить код</button>
+<p id="forgotError" style="color:#ff5555; font-size:13px; margin-top:12px; text-align:center;"></p>
+<p id="forgotSuccess" style="color:#00ff88; font-size:13px; margin-top:12px; text-align:center;"></p>
+<p style="color:rgba(255,255,255,0.4); font-size:12px; text-align:center; margin-top:16px;"><span onclick="switchForm('login')" style="color:#00e5ff; cursor:pointer;">← Назад к входу</span></p>
+</div>
+
+<!-- Форма: Новый пароль -->
+<div id="resetForm" style="display:none;">
+<h2 style="color:#fff; margin-bottom:8px; font-size:22px;">Новый пароль</h2>
+<p style="color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:24px;">Введите новый пароль</p>
+<input id="resetCode" type="text" placeholder="Код из письма" maxlength="6" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:18px; letter-spacing:6px; text-align:center; margin-bottom:12px; outline:none;">
+<input id="newPassword" type="password" placeholder="Новый пароль (мин. 6 симв.)" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:12px; outline:none;">
+<input id="confirmNewPassword" type="password" placeholder="Повторите пароль" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:16px; outline:none;">
+<button onclick="doResetPassword()" style="width:100%; padding:13px; background:linear-gradient(135deg,#ff7a3d,#ff5252); border:none; border-radius:12px; color:#fff; font-weight:700; font-size:15px; cursor:pointer;">Изменить пароль</button>
+<p id="resetError" style="color:#ff5555; font-size:13px; margin-top:12px; text-align:center;"></p>
+<p style="color:rgba(255,255,255,0.4); font-size:12px; text-align:center; margin-top:16px;"><span onclick="switchForm('login')" style="color:#00e5ff; cursor:pointer;">← Назад к входу</span></p>
+</div>
+`;
+
+// Вставить формы после registerForm
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.insertAdjacentHTML('afterend', modalForms);
+    }
+});
+
+
 function openModal(form) {
     const modal = document.getElementById('authModal');
     modal.style.display = 'flex';
@@ -540,8 +576,12 @@ function closeModal() {
 function switchForm(form) {
     document.getElementById('loginForm').style.display = form === 'login' ? 'block' : 'none';
     document.getElementById('registerForm').style.display = form === 'register' ? 'block' : 'none';
+    document.getElementById('forgotForm').style.display = form === 'forgot' ? 'block' : 'none';
+    document.getElementById('resetForm').style.display = form === 'reset' ? 'block' : 'none';
     document.getElementById('loginError').textContent = '';
     document.getElementById('registerError').textContent = '';
+    document.getElementById('forgotError').textContent = '';
+    document.getElementById('forgotSuccess').textContent = '';
     // Сброс шагов регистрации
     if (form === 'register') {
         document.getElementById('regStep1').style.display = 'block';
@@ -762,6 +802,70 @@ function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     location.reload();
+}
+
+
+let resetEmail = '';
+
+
+async function sendResetCode() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const errEl = document.getElementById('forgotError');
+    const successEl = document.getElementById('forgotSuccess');
+
+    if (!email) { errEl.textContent = 'Введите email'; return; }
+
+    errEl.textContent = '';
+    successEl.textContent = '';
+
+    try {
+        const res = await fetch(`${API}/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            resetEmail = email;
+            successEl.textContent = '✓ Код отправлен на email!';
+            switchForm('reset');
+        } else {
+            errEl.textContent = data.error || 'Ошибка';
+        }
+    } catch {
+        errEl.textContent = 'Ошибка соединения';
+    }
+}
+
+
+async function doResetPassword() {
+    const code = document.getElementById('resetCode').value.trim();
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmNewPassword').value;
+    const errEl = document.getElementById('resetError');
+
+    if (!code || !newPassword || !confirmPassword) { errEl.textContent = 'Заполните все поля'; return; }
+    if (newPassword.length < 6) { errEl.textContent = 'Пароль минимум 6 символов'; return; }
+    if (newPassword !== confirmPassword) { errEl.textContent = 'Пароли не совпадают'; return; }
+
+    errEl.textContent = '';
+
+    try {
+        const res = await fetch(`${API}/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: resetEmail, code, newPassword })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            alert('✓ Пароль успешно изменён!');
+            switchForm('login');
+        } else {
+            errEl.textContent = data.error || 'Ошибка';
+        }
+    } catch {
+        errEl.textContent = 'Ошибка соединения';
+    }
 }
 
 
