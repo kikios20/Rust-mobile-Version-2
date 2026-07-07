@@ -76,6 +76,9 @@ ul {
     position: fixed;
     inset: 0;
     contain: strict;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 
