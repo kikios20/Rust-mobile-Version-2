@@ -79,27 +79,42 @@
 
 
 <!-- Модал покупки -->
-<div id="buyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:999; justify-content:center; align-items:center;">
-<div style="background:#05070d; border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:24px; max-width:400px; width:90%;">
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-<h3 id="modalTitle" style="color:#fff;"></h3>
-<button onclick="closeBuyModal()" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;">✕</button>
+<div id="buyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(12px); z-index:999; justify-content:center; align-items:center; padding:20px;">
+<div style="background:linear-gradient(135deg, rgba(5,7,13,0.95), rgba(12,14,22,0.95)); border:1px solid rgba(0,229,255,0.2); border-radius:20px; padding:28px; max-width:420px; width:100%; box-shadow:0 0 40px rgba(0,229,255,0.1);">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+<h3 id="modalTitle" style="color:#fff; font-size:18px; font-weight:700;"></h3>
+<button onclick="closeBuyModal()" style="background:none; border:none; color:rgba(255,255,255,0.5); font-size:28px; cursor:pointer; padding:0; width:32px; height:32px; display:flex; justify-content:center; align-items:center;">✕</button>
 </div>
-<p id="modalDesc" style="color:rgba(255,255,255,0.6); margin-bottom:16px;"></p>
-<div style="background:rgba(255,255,255,0.04); padding:12px; border-radius:10px; margin-bottom:20px;">
-<p style="color:rgba(255,255,255,0.5); font-size:12px;">Цена:</p>
-<p id="modalPrice" style="color:#00e5ff; font-size:24px; font-weight:700;"></p>
+
+
+<div style="background:rgba(0,229,255,0.08); border-left:3px solid #00e5ff; padding:12px; border-radius:8px; margin-bottom:20px;">
+<p style="color:rgba(255,255,255,0.6); font-size:11px; letter-spacing:1px;">ЦЕНА ЗА ЕДИНИЦУ</p>
+<p id="modalPrice" style="color:#00e5ff; font-size:28px; font-weight:800; margin-top:4px;"></p>
 </div>
-<div style="display:flex; gap:10px; margin-bottom:16px;">
-<input id="buyQuantity" type="number" value="1" min="1" style="flex:1; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:14px; outline:none;">
-<button onclick="updateBuyTotal()" style="padding:10px 16px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; cursor:pointer;">=</button>
+
+
+<div style="margin-bottom:20px;">
+<label style="color:rgba(255,255,255,0.7); font-size:12px; letter-spacing:1px; display:block; margin-bottom:8px;">КОЛИЧЕСТВО</label>
+<input id="buyQuantity" type="number" value="1" min="1" oninput="updateBuyTotal()" style="width:100%; padding:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:10px; color:#fff; font-size:15px; outline:none; transition:all 0.2s;">
 </div>
-<div style="background:rgba(255,255,255,0.04); padding:12px; border-radius:10px; margin-bottom:20px;">
-<p style="color:rgba(255,255,255,0.5); font-size:12px;">Итого:</p>
-<p id="modalTotal" style="color:#00ff88; font-size:20px; font-weight:700;"></p>
+
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+<div style="background:rgba(138,92,255,0.1); border:1px solid rgba(138,92,255,0.2); padding:12px; border-radius:10px;">
+<p style="color:rgba(255,255,255,0.5); font-size:10px; letter-spacing:1px;">БАЛАНС</p>
+<p id="modalBalance" style="color:#8a5cff; font-size:18px; font-weight:700;"></p>
 </div>
-<p id="modalError" style="color:#ff5555; font-size:12px; margin-bottom:16px; display:none;"></p>
-<button onclick="confirmBuy()" style="width:100%; padding:12px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:10px; color:#000; font-weight:700; cursor:pointer;">Купить</button>
+<div style="background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.2); padding:12px; border-radius:10px;">
+<p style="color:rgba(255,255,255,0.5); font-size:10px; letter-spacing:1px;">ИТОГО</p>
+<p id="modalTotal" style="color:#00ff88; font-size:18px; font-weight:700;"></p>
+</div>
+</div>
+
+
+<p id="modalError" style="color:#ff6b6b; background:rgba(255,107,107,0.15); padding:10px; border-radius:8px; border-left:3px solid #ff6b6b; font-size:12px; margin-bottom:16px; display:none;"></p>
+
+
+<button onclick="confirmBuy()" style="width:100%; padding:14px; background:linear-gradient(135deg,#00e5ff,#8a5cff); border:none; border-radius:12px; color:#000; font-weight:700; font-size:15px; cursor:pointer; transition:all 0.3s; box-shadow:0 0 20px rgba(0,229,255,0.2);">🛒 Купить</button>
 </div>
 </div>
 
@@ -300,12 +315,26 @@ function filterCategory(cat) {
 }
 
 
-function openBuyModal(itemName, price) {
+async function openBuyModal(itemName, price) {
   selectedItem = {name: itemName, price: price};
   document.getElementById('modalTitle').textContent = itemName;
   document.getElementById('modalPrice').textContent = price + ' ₽';
   document.getElementById('buyQuantity').value = 1;
   document.getElementById('modalError').style.display = 'none';
+  
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const res = await fetch(`${API}/profile`, {
+        headers: {'Authorization': `Bearer ${token}`}
+      });
+      const user = await res.json();
+      document.getElementById('modalBalance').textContent = user.balance + ' ₽';
+    } catch (err) {
+      document.getElementById('modalBalance').textContent = '—';
+    }
+  }
+  
   updateBuyTotal();
   document.getElementById('buyModal').style.display = 'flex';
 }
