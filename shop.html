@@ -348,8 +348,12 @@ async function confirmBuy() {
     const data = await res.json();
     
     if (res.ok) {
-      alert('✓ Покупка выполнена!');
+      alert('✓ Заказ создан! Статус: Ожидает выдачи');
       closeBuyModal();
+    } else if (res.status === 402) {
+      document.getElementById('modalError').textContent = '❌ Недостаточно средств. Пополните счет!';
+      document.getElementById('modalError').style.display = 'block';
+      setTimeout(() => window.location.href = 'index.html#topup', 2000);
     } else {
       document.getElementById('modalError').textContent = data.error || 'Ошибка';
       document.getElementById('modalError').style.display = 'block';

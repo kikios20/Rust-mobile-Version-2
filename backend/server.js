@@ -472,39 +472,40 @@ pool.query(`CREATE TABLE IF NOT EXISTS orders (
   user_id INTEGER NOT NULL REFERENCES users(id),
   item_name VARCHAR(100) NOT NULL,
   price INTEGER NOT NULL,
+  quantity INTEGER DEFAULT 1,
   status VARCHAR(20) DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT NOW()
 )`).catch(err => console.error('Orders table error:', err));
 
+// Добавляем колонку quantity если её нет
+pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS quantity INTEGER DEFAULT 1`).catch(() => {});
+
 
 // Покупка товара
 app.post('/shop/buy', authMiddleware, async (req, res) => {
-  const { item, price } = req.body;
-  if (!item || !price) return res.status(400).json({ error: 'Укажите товар и цену' });
-  if (price <= 0) return res.status(400).json({ error: 'Неверная цена' });
+  const { itemName, price, quantity } = req.body;
+  if (!itemName || !price) return res.status(400).json({ error: 'Укажите товар и цену' });
+  
   try {
-    // Проверяем баланс
     const userResult = await pool.query('SELECT balance FROM users WHERE id = $1', [req.user.id]);
-    const user = userResult.rows[0];
-    if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
-    if (user.balance < price) return res.status(400).json({ error: `Недостаточно средств. Ваш баланс: ${user.balance} ₴` });
+    if (userResult.rows.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
     
-    // Списываем баланс и создаём заказ
-    const newBalance = user.balance - price;
-    await pool.query('UPDATE users SET balance = $1 WHERE id = $2', [newBalance, req.user.id]);
-    const orderResult = await pool.query(
-      'INSERT INTO orders (user_id, item_name, price) VALUES ($1, $2, $3) RETURNING id',
-      [req.user.id, item, price]
+    const balance = userResult.rows[0].balance;
+    if (balance < price) {
+      return res.status(402).json({ error: 'Недостаточно средств' });
+    }
+    
+    await pool.query('UPDATE users SET balance = balance - $1 WHERE id = $2', [price, req.user.id]);
+    
+    const result = await pool.query(
+      'INSERT INTO orders (user_id, item_name, price, quantity, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [req.user.id, itemName, price, quantity || 1, 'Ожидает']
     );
-    const orderId = orderResult.rows[0].id;
     
-    res.json({ 
-      success: true, 
-      orderId: `ER-${String(orderId).padStart(6, '0')}`,
-      newBalance 
-    });
+    console.log(`Order created: user #${req.user.id}, item: ${itemName}, price: ${price}, qty: ${quantity || 1}`);
+    res.json({ success: true, orderId: result.rows[0].id, message: 'Заказ создан' });
   } catch (err) {
-    console.error('Buy error:', err.message);
+    console.error('Shop buy error:', err.message);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
