@@ -274,11 +274,11 @@ function renderShop() {
   }
   
   grid.innerHTML = itemsToShow.map((item, idx) => `
-    <div onclick="openBuyModal('${item.name}', ${item.price})" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; cursor:pointer; transition:all 0.3s;">
+    <button onclick="openBuyModal('${item.name.replace(/'/g, "\\'")}', ${item.price})" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; cursor:pointer; width:100%; text-align:left;">
       <p style="color:#fff; font-weight:700; margin-bottom:8px; font-size:14px;">${item.name}</p>
       <p style="color:#00e5ff; font-size:16px; font-weight:700;">${item.price} ₽</p>
       ${item.desc ? `<p style="color:rgba(255,255,255,0.4); font-size:11px; margin-top:8px;">${item.desc}</p>` : ''}
-    </div>
+    </button>
   `).join('');
 }
 
@@ -286,15 +286,16 @@ function renderShop() {
 function filterCategory(cat) {
   currentFilter = cat;
   document.querySelectorAll('.category-btn').forEach(btn => {
-    btn.style.background = 'rgba(255,255,255,0.06)';
-    btn.style.color = '#fff';
-    btn.style.border = '1px solid rgba(255,255,255,0.1)';
-    btn.style.fontWeight = '600';
+    if (btn.textContent.includes(event.target.textContent)) {
+      btn.style.background = 'linear-gradient(135deg,#00e5ff,#8a5cff)';
+      btn.style.color = '#000';
+      btn.style.border = 'none';
+    } else {
+      btn.style.background = 'rgba(255,255,255,0.06)';
+      btn.style.color = '#fff';
+      btn.style.border = '1px solid rgba(255,255,255,0.1)';
+    }
   });
-  event.target.style.background = 'linear-gradient(135deg,#00e5ff,#8a5cff)';
-  event.target.style.color = '#000';
-  event.target.style.border = 'none';
-  event.target.style.fontWeight = '700';
   renderShop();
 }
 
