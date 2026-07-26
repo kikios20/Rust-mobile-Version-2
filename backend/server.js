@@ -120,7 +120,7 @@ const app = express();
 
 
 app.use(cors({
-  origin: ['https://kikios20.github.io', 'http://localhost:3000'],
+  origin: ['https://kikios20.github.io', 'https://elementrust.website', 'http://localhost:3000'],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
